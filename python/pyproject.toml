@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hiok-cloud"
+version = "0.1.0"
+description = "Official Python SDK for HIOK Cloud"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "HIOK"}]
+keywords = ["hiok", "cloud", "sdk"]
+classifiers = ["Programming Language :: Python :: 3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
