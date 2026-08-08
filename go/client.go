@@ -95,6 +95,25 @@ func (c *Client) VirtualMachines(ctx context.Context) ([]map[string]any, error) 
 	err := c.Do(ctx, http.MethodGet, "/api/VirtualMachine/list-vms-info", nil, &r, true)
 	return r.Data, err
 }
+
+func (c *Client) CreateVirtualMachine(ctx context.Context, name, region, image string, vcpus int, ramGB float64) error {
+	if region == "" {
+		region = "south-india"
+	}
+	if image == "" {
+		image = "ubuntu-24.04"
+	}
+	if vcpus <= 0 {
+		vcpus = 1
+	}
+	if ramGB <= 0 {
+		ramGB = 1
+	}
+	return c.Do(ctx, http.MethodPost, "/api/VirtualMachine/create-vm", map[string]any{
+		"vmName": name, "regions": []string{region}, "sourceFilePath": image,
+		"vcpuCount": vcpus, "ramSize": ramGB,
+	}, nil, true)
+}
 func (c *Client) Search(ctx context.Context, query string) (map[string]any, error) {
 	var r struct {
 		Data map[string]any `json:"data"`
