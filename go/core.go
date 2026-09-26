@@ -151,7 +151,7 @@ func (c *Client) CallRaw(ctx context.Context, method, target string, payload []b
 			return nil, err
 		}
 		req.Header.Set("Accept", "application/json")
-		req.Header.Set("User-Agent", "hiok-go-sdk/0.3")
+		req.Header.Set("User-Agent", "hiok-go-sdk/0.4")
 		for k, v := range headers {
 			req.Header.Set(k, v)
 		}

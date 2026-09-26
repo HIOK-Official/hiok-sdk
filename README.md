@@ -20,7 +20,7 @@ For a private deployment, pass its base URL to the client constructor.
 
 ## Coverage
 
-Every SDK carries **every API operation** — 837 operations in 89 groups — generated
+Every SDK carries **every API operation** — 906 operations in 94 groups — generated
 from the API's own OpenAPI document by [`generator/generate.py`](generator/generate.py),
 plus a hand-written core (authentication, retries through deploys, errors) and a
 storage transfer helper for files of any size.
@@ -40,6 +40,20 @@ language. Regenerate after any API change:
 python3 generator/generate.py                                  # from a running API
 python3 generator/generate.py --spec swagger.json              # from a saved document
 ```
+
+## Azure Artifacts feed (HIOK organization)
+
+Members of the Hiok Azure DevOps organization can install every SDK from the
+`HiokCloud` feed (sign in with a PAT with Packaging → Read):
+
+```bash
+pip install hiok-cloud --index-url https://pkgs.dev.azure.com/Hiok/_packaging/HiokCloud/pypi/simple/
+npm install @hiok/cloud --registry https://pkgs.dev.azure.com/Hiok/_packaging/HiokCloud/npm/registry/
+dotnet add package Hiok.Cloud --source https://pkgs.dev.azure.com/Hiok/_packaging/HiokCloud/nuget/v3/index.json
+# Maven: repository https://pkgs.dev.azure.com/Hiok/_packaging/HiokCloud/maven/v1, com.hiokcloud:hiok-sdk
+```
+
+Publish a release there with `AZURE_ARTIFACTS_PAT=... ./publish-azure-feed.sh` after `./build-packages.sh`.
 
 ## Authentication
 

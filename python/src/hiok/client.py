@@ -115,7 +115,7 @@ class HiokClient:
         return ("?" + urllib.parse.urlencode(pairs)) if pairs else ""
 
     def _headers(self, auth: bool, extra: dict[str, str] | None) -> dict[str, str]:
-        headers = {"Accept": "application/json", "User-Agent": "hiok-python-sdk/0.3"}
+        headers = {"Accept": "application/json", "User-Agent": "hiok-python-sdk/0.4"}
         if auth:
             self._ensure_token()
             if self.token:

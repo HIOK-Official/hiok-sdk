@@ -10,7 +10,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="$HERE/../HIOK-Common-Backend/Hiok.Api/Cli/sdk"
-V=0.3.1
+V=0.4.0
 rm -rf "$OUT" && mkdir -p "$OUT"
 export PATH="$HOME/.go/bin:$HOME/.node/bin:$HOME/.dotnet:$PATH"
 

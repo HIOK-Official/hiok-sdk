@@ -53,6 +53,64 @@ class AccessControlApi:
         """Scope chain.  [GET /api/access-control/{resourceType}/{resourceId}/scope-chain]"""
         return self._c.request("GET", "/api/access-control/" + self._c._seg(resource_type) + "/" + self._c._seg(resource_id) + "/scope-chain", None, query=None)
 
+class AccountApi:
+    """Account operations."""
+
+    def __init__(self, client: "HiokClient"):
+        self._c = client
+
+    def api_keys(self) -> Any:
+        """Api keys.  [GET /api/account/api-keys]"""
+        return self._c.request("GET", "/api/account/api-keys", None, query=None)
+
+    def change_password(self, body: Any = None) -> Any:
+        """Change password.  [POST /api/account/password]"""
+        return self._c.request("POST", "/api/account/password", body, query=None)
+
+    def create_api_key(self, body: Any = None) -> Any:
+        """Create api key.  [POST /api/account/api-keys]"""
+        return self._c.request("POST", "/api/account/api-keys", body, query=None)
+
+    def delete_account(self, body: Any = None) -> Any:
+        """Delete account.  [POST /api/account/delete]"""
+        return self._c.request("POST", "/api/account/delete", body, query=None)
+
+    def delete_tenant(self, body: Any = None) -> Any:
+        """Delete tenant.  [POST /api/account/tenants/delete]"""
+        return self._c.request("POST", "/api/account/tenants/delete", body, query=None)
+
+    def deletion_plan(self) -> Any:
+        """Deletion plan.  [GET /api/account/deletion]"""
+        return self._c.request("GET", "/api/account/deletion", None, query=None)
+
+    def deletion_status(self) -> Any:
+        """Deletion status.  [GET /api/account/delete/status]"""
+        return self._c.request("GET", "/api/account/delete/status", None, query=None)
+
+    def export(self, *, format_: Any = None) -> Any:
+        """Export.  [GET /api/account/export]"""
+        return self._c.request("GET", "/api/account/export", None, query={"format": format_})
+
+    def get_preferences(self) -> Any:
+        """Get preferences.  [GET /api/account/preferences]"""
+        return self._c.request("GET", "/api/account/preferences", None, query=None)
+
+    def revoke_api_key(self, id_: str) -> Any:
+        """Revoke api key.  [DELETE /api/account/api-keys/{id}]"""
+        return self._c.request("DELETE", "/api/account/api-keys/" + self._c._seg(id_), None, query=None)
+
+    def save_preferences(self, body: Any = None) -> Any:
+        """Save preferences.  [PUT /api/account/preferences]"""
+        return self._c.request("PUT", "/api/account/preferences", body, query=None)
+
+    def tenant_deletion_plan(self, *, account: Any = None) -> Any:
+        """Tenant deletion plan.  [GET /api/account/tenants/deletion]"""
+        return self._c.request("GET", "/api/account/tenants/deletion", None, query={"account": account})
+
+    def tenant_deletion_status(self, *, account: Any = None) -> Any:
+        """Tenant deletion status.  [GET /api/account/tenants/delete/status]"""
+        return self._c.request("GET", "/api/account/tenants/delete/status", None, query={"account": account})
+
 class AdminApi:
     """Admin operations."""
 
@@ -1231,6 +1289,144 @@ class HiokCloudHierarchyApi:
         """Get hierarchy.  [GET /api/HiokCloudHierarchy/hierarchy/{id}]"""
         return self._c.request("GET", "/api/HiokCloudHierarchy/hierarchy/" + self._c._seg(id_), None, query=None)
 
+class HiokIdApi:
+    """HiokId operations."""
+
+    def __init__(self, client: "HiokClient"):
+        self._c = client
+
+    def accept(self, id_: str) -> Any:
+        """Accept.  [POST /api/hiok-id/invitations/{id}/accept]"""
+        return self._c.request("POST", "/api/hiok-id/invitations/" + self._c._seg(id_) + "/accept", None, query=None)
+
+    def add_app_credential(self, id_: str, body: Any = None) -> Any:
+        """Add app credential.  [POST /api/hiok-id/apps/{id}/credentials]"""
+        return self._c.request("POST", "/api/hiok-id/apps/" + self._c._seg(id_) + "/credentials", body, query=None)
+
+    def add_group_member(self, id_: str, body: Any = None) -> Any:
+        """Add group member.  [POST /api/hiok-id/groups/{id}/members]"""
+        return self._c.request("POST", "/api/hiok-id/groups/" + self._c._seg(id_) + "/members", body, query=None)
+
+    def add_sp_credential(self, id_: str, body: Any = None) -> Any:
+        """Add sp credential.  [POST /api/hiok-id/service-principals/{id}/credentials]"""
+        return self._c.request("POST", "/api/hiok-id/service-principals/" + self._c._seg(id_) + "/credentials", body, query=None)
+
+    def apps(self) -> Any:
+        """Apps.  [GET /api/hiok-id/apps]"""
+        return self._c.request("GET", "/api/hiok-id/apps", None, query=None)
+
+    def create_app(self, body: Any = None) -> Any:
+        """Create app.  [POST /api/hiok-id/apps]"""
+        return self._c.request("POST", "/api/hiok-id/apps", body, query=None)
+
+    def create_group(self, body: Any = None) -> Any:
+        """Create group.  [POST /api/hiok-id/groups]"""
+        return self._c.request("POST", "/api/hiok-id/groups", body, query=None)
+
+    def create_service_principal(self, body: Any = None) -> Any:
+        """Create service principal.  [POST /api/hiok-id/service-principals]"""
+        return self._c.request("POST", "/api/hiok-id/service-principals", body, query=None)
+
+    def create_tenant(self, body: Any = None) -> Any:
+        """Create tenant.  [POST /api/hiok-id/tenants]"""
+        return self._c.request("POST", "/api/hiok-id/tenants", body, query=None)
+
+    def decline(self, id_: str) -> Any:
+        """Decline.  [POST /api/hiok-id/invitations/{id}/decline]"""
+        return self._c.request("POST", "/api/hiok-id/invitations/" + self._c._seg(id_) + "/decline", None, query=None)
+
+    def delete_app(self, id_: str) -> Any:
+        """Delete app.  [DELETE /api/hiok-id/apps/{id}]"""
+        return self._c.request("DELETE", "/api/hiok-id/apps/" + self._c._seg(id_), None, query=None)
+
+    def delete_group(self, id_: str) -> Any:
+        """Delete group.  [DELETE /api/hiok-id/groups/{id}]"""
+        return self._c.request("DELETE", "/api/hiok-id/groups/" + self._c._seg(id_), None, query=None)
+
+    def delete_service_principal(self, id_: str) -> Any:
+        """Delete service principal.  [DELETE /api/hiok-id/service-principals/{id}]"""
+        return self._c.request("DELETE", "/api/hiok-id/service-principals/" + self._c._seg(id_), None, query=None)
+
+    def directories(self) -> Any:
+        """Directories.  [GET /api/hiok-id/directories]"""
+        return self._c.request("GET", "/api/hiok-id/directories", None, query=None)
+
+    def enter(self, body: Any = None) -> Any:
+        """Enter.  [POST /api/hiok-id/directories/enter]"""
+        return self._c.request("POST", "/api/hiok-id/directories/enter", body, query=None)
+
+    def groups(self) -> Any:
+        """Groups.  [GET /api/hiok-id/groups]"""
+        return self._c.request("GET", "/api/hiok-id/groups", None, query=None)
+
+    def invite(self, body: Any = None) -> Any:
+        """Invite.  [POST /api/hiok-id/users]"""
+        return self._c.request("POST", "/api/hiok-id/users", body, query=None)
+
+    def leave(self, body: Any = None) -> Any:
+        """Leave.  [POST /api/hiok-id/directories/leave]"""
+        return self._c.request("POST", "/api/hiok-id/directories/leave", body, query=None)
+
+    def me(self) -> Any:
+        """Me.  [GET /api/hiok-id/me]"""
+        return self._c.request("GET", "/api/hiok-id/me", None, query=None)
+
+    def overview(self) -> Any:
+        """Overview.  [GET /api/hiok-id/overview]"""
+        return self._c.request("GET", "/api/hiok-id/overview", None, query=None)
+
+    def remove_app_credential(self, id_: str, credential_id: str) -> Any:
+        """Remove app credential.  [DELETE /api/hiok-id/apps/{id}/credentials/{credentialId}]"""
+        return self._c.request("DELETE", "/api/hiok-id/apps/" + self._c._seg(id_) + "/credentials/" + self._c._seg(credential_id), None, query=None)
+
+    def remove_group_member(self, id_: str, kind: str, reference: str) -> Any:
+        """Remove group member.  [DELETE /api/hiok-id/groups/{id}/members/{kind}/{reference}]"""
+        return self._c.request("DELETE", "/api/hiok-id/groups/" + self._c._seg(id_) + "/members/" + self._c._seg(kind) + "/" + self._c._seg(reference), None, query=None)
+
+    def remove_member(self, id_: str) -> Any:
+        """Remove member.  [DELETE /api/hiok-id/users/{id}]"""
+        return self._c.request("DELETE", "/api/hiok-id/users/" + self._c._seg(id_), None, query=None)
+
+    def remove_sp_credential(self, id_: str, credential_id: str) -> Any:
+        """Remove sp credential.  [DELETE /api/hiok-id/service-principals/{id}/credentials/{credentialId}]"""
+        return self._c.request("DELETE", "/api/hiok-id/service-principals/" + self._c._seg(id_) + "/credentials/" + self._c._seg(credential_id), None, query=None)
+
+    def rename_directory(self, body: Any = None) -> Any:
+        """Rename directory.  [PUT /api/hiok-id/directory]"""
+        return self._c.request("PUT", "/api/hiok-id/directory", body, query=None)
+
+    def resend(self, id_: str) -> Any:
+        """Resend.  [POST /api/hiok-id/users/{id}/resend]"""
+        return self._c.request("POST", "/api/hiok-id/users/" + self._c._seg(id_) + "/resend", None, query=None)
+
+    def service_principals(self) -> Any:
+        """Service principals.  [GET /api/hiok-id/service-principals]"""
+        return self._c.request("GET", "/api/hiok-id/service-principals", None, query=None)
+
+    def sign_ins(self, *, take: Any = None, outcome: Any = None) -> Any:
+        """Sign ins.  [GET /api/hiok-id/sign-ins]"""
+        return self._c.request("GET", "/api/hiok-id/sign-ins", None, query={"take": take, "outcome": outcome})
+
+    def update_app(self, id_: str, body: Any = None) -> Any:
+        """Update app.  [PUT /api/hiok-id/apps/{id}]"""
+        return self._c.request("PUT", "/api/hiok-id/apps/" + self._c._seg(id_), body, query=None)
+
+    def update_group(self, id_: str, body: Any = None) -> Any:
+        """Update group.  [PUT /api/hiok-id/groups/{id}]"""
+        return self._c.request("PUT", "/api/hiok-id/groups/" + self._c._seg(id_), body, query=None)
+
+    def update_member(self, id_: str, body: Any = None) -> Any:
+        """Update member.  [PUT /api/hiok-id/users/{id}]"""
+        return self._c.request("PUT", "/api/hiok-id/users/" + self._c._seg(id_), body, query=None)
+
+    def update_service_principal(self, id_: str, body: Any = None) -> Any:
+        """Update service principal.  [PUT /api/hiok-id/service-principals/{id}]"""
+        return self._c.request("PUT", "/api/hiok-id/service-principals/" + self._c._seg(id_), body, query=None)
+
+    def users(self) -> Any:
+        """Users.  [GET /api/hiok-id/users]"""
+        return self._c.request("GET", "/api/hiok-id/users", None, query=None)
+
 class HiokUsersApi:
     """HiokUsers operations."""
 
@@ -2084,6 +2280,40 @@ class OVSApi:
     def list_bridges(self) -> Any:
         """List bridges.  [GET /api/OVS/bridges]"""
         return self._c.request("GET", "/api/OVS/bridges", None, query=None)
+
+class OidcApi:
+    """Oidc operations."""
+
+    def __init__(self, client: "HiokClient"):
+        self._c = client
+
+    def approve(self, body: Any = None) -> Any:
+        """Approve.  [POST /api/hiok-id/oidc/authorize]"""
+        return self._c.request("POST", "/api/hiok-id/oidc/authorize", body, query=None)
+
+    def authorize(self, *, client_id: Any = None, redirect_uri: Any = None, response_type: Any = None) -> Any:
+        """Authorize.  [GET /api/hiok-id/oidc/authorize]"""
+        return self._c.request("GET", "/api/hiok-id/oidc/authorize", None, query={"client_id": client_id, "redirect_uri": redirect_uri, "response_type": response_type})
+
+    def authorize_info(self, *, client_id: Any = None, redirect_uri: Any = None) -> Any:
+        """Authorize info.  [GET /api/hiok-id/oidc/authorize/info]"""
+        return self._c.request("GET", "/api/hiok-id/oidc/authorize/info", None, query={"client_id": client_id, "redirect_uri": redirect_uri})
+
+    def discovery(self) -> Any:
+        """Discovery.  [GET /api/hiok-id/oidc/.well-known/openid-configuration]"""
+        return self._c.request("GET", "/api/hiok-id/oidc/.well-known/openid-configuration", None, query=None)
+
+    def jwks(self) -> Any:
+        """Jwks.  [GET /api/hiok-id/oidc/jwks]"""
+        return self._c.request("GET", "/api/hiok-id/oidc/jwks", None, query=None)
+
+    def token(self, body: Any = None) -> Any:
+        """Token.  [POST /api/hiok-id/oidc/token]"""
+        return self._c.request("POST", "/api/hiok-id/oidc/token", body, query=None)
+
+    def user_info(self) -> Any:
+        """User info.  [GET /api/hiok-id/oidc/userinfo]"""
+        return self._c.request("GET", "/api/hiok-id/oidc/userinfo", None, query=None)
 
 class PanelApi:
     """Panel operations."""
@@ -3971,6 +4201,7 @@ class Api:
 
     def __init__(self, client: "HiokClient"):
         self.access_control = AccessControlApi(client)
+        self.account = AccountApi(client)
         self.admin = AdminApi(client)
         self.admin_data = AdminDataApi(client)
         self.admin_dns = AdminDnsApi(client)
@@ -4002,6 +4233,7 @@ class Api:
         self.hierarchy_view = HierarchyViewApi(client)
         self.hiok_cloud_groups = HiokCloudGroupsApi(client)
         self.hiok_cloud_hierarchy = HiokCloudHierarchyApi(client)
+        self.hiok_id = HiokIdApi(client)
         self.hiok_users = HiokUsersApi(client)
         self.hybrid = HybridApi(client)
         self.identity = IdentityApi(client)
@@ -4025,6 +4257,7 @@ class Api:
         self.notification = NotificationApi(client)
         self.o_auth = OAuthApi(client)
         self.ovs = OVSApi(client)
+        self.oidc = OidcApi(client)
         self.panel = PanelApi(client)
         self.postgres_database = PostgresDatabaseApi(client)
         self.pricing = PricingApi(client)

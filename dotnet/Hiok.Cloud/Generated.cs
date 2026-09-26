@@ -12,6 +12,7 @@ namespace Hiok.Cloud;
 public sealed partial class HiokApi
 {
     public AccessControlApi AccessControl { get; }
+    public AccountApi Account { get; }
     public AdminApi Admin { get; }
     public AdminDataApi AdminData { get; }
     public AdminDnsApi AdminDns { get; }
@@ -43,6 +44,7 @@ public sealed partial class HiokApi
     public HierarchyViewApi HierarchyView { get; }
     public HiokCloudGroupsApi HiokCloudGroups { get; }
     public HiokCloudHierarchyApi HiokCloudHierarchy { get; }
+    public HiokIdApi HiokId { get; }
     public HiokUsersApi HiokUsers { get; }
     public HybridApi Hybrid { get; }
     public IdentityApi Identity { get; }
@@ -66,6 +68,7 @@ public sealed partial class HiokApi
     public NotificationApi Notification { get; }
     public OAuthApi OAuth { get; }
     public OVSApi OVS { get; }
+    public OidcApi Oidc { get; }
     public PanelApi Panel { get; }
     public PostgresDatabaseApi PostgresDatabase { get; }
     public PricingApi Pricing { get; }
@@ -106,6 +109,7 @@ public sealed partial class HiokApi
     internal HiokApi(HiokClient client)
     {
         AccessControl = new AccessControlApi(client);
+        Account = new AccountApi(client);
         Admin = new AdminApi(client);
         AdminData = new AdminDataApi(client);
         AdminDns = new AdminDnsApi(client);
@@ -137,6 +141,7 @@ public sealed partial class HiokApi
         HierarchyView = new HierarchyViewApi(client);
         HiokCloudGroups = new HiokCloudGroupsApi(client);
         HiokCloudHierarchy = new HiokCloudHierarchyApi(client);
+        HiokId = new HiokIdApi(client);
         HiokUsers = new HiokUsersApi(client);
         Hybrid = new HybridApi(client);
         Identity = new IdentityApi(client);
@@ -160,6 +165,7 @@ public sealed partial class HiokApi
         Notification = new NotificationApi(client);
         OAuth = new OAuthApi(client);
         OVS = new OVSApi(client);
+        Oidc = new OidcApi(client);
         Panel = new PanelApi(client);
         PostgresDatabase = new PostgresDatabaseApi(client);
         Pricing = new PricingApi(client);
@@ -244,6 +250,65 @@ public sealed partial class AccessControlApi
     /// <summary>Scope chain. <c>[GET /api/access-control/{resourceType}/{resourceId}/scope-chain]</c></summary>
     public Task<JsonNode?> ScopeChainAsync(string resourceType, string resourceId, CancellationToken ct = default)
         => _c.InvokeAsync(new HttpMethod("GET"), "/api/access-control/" + HiokClient.Segment(resourceType) + "/" + HiokClient.Segment(resourceId) + "/scope-chain", null, null, ct);
+}
+
+/// <summary>Account operations.</summary>
+public sealed partial class AccountApi
+{
+    private readonly HiokClient _c;
+    internal AccountApi(HiokClient client) => _c = client;
+
+    /// <summary>Api keys. <c>[GET /api/account/api-keys]</c></summary>
+    public Task<JsonNode?> ApiKeysAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/account/api-keys", null, null, ct);
+
+    /// <summary>Change password. <c>[POST /api/account/password]</c></summary>
+    public Task<JsonNode?> ChangePasswordAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/account/password", body, null, ct);
+
+    /// <summary>Create api key. <c>[POST /api/account/api-keys]</c></summary>
+    public Task<JsonNode?> CreateApiKeyAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/account/api-keys", body, null, ct);
+
+    /// <summary>Delete account. <c>[POST /api/account/delete]</c></summary>
+    public Task<JsonNode?> DeleteAccountAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/account/delete", body, null, ct);
+
+    /// <summary>Delete tenant. <c>[POST /api/account/tenants/delete]</c></summary>
+    public Task<JsonNode?> DeleteTenantAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/account/tenants/delete", body, null, ct);
+
+    /// <summary>Deletion plan. <c>[GET /api/account/deletion]</c></summary>
+    public Task<JsonNode?> DeletionPlanAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/account/deletion", null, null, ct);
+
+    /// <summary>Deletion status. <c>[GET /api/account/delete/status]</c></summary>
+    public Task<JsonNode?> DeletionStatusAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/account/delete/status", null, null, ct);
+
+    /// <summary>Export. <c>[GET /api/account/export]</c></summary>
+    public Task<JsonNode?> ExportAsync(object? format = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/account/export", null, new Dictionary<string, object?> { ["format"] = format }, ct);
+
+    /// <summary>Get preferences. <c>[GET /api/account/preferences]</c></summary>
+    public Task<JsonNode?> GetPreferencesAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/account/preferences", null, null, ct);
+
+    /// <summary>Revoke api key. <c>[DELETE /api/account/api-keys/{id}]</c></summary>
+    public Task<JsonNode?> RevokeApiKeyAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/account/api-keys/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>Save preferences. <c>[PUT /api/account/preferences]</c></summary>
+    public Task<JsonNode?> SavePreferencesAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("PUT"), "/api/account/preferences", body, null, ct);
+
+    /// <summary>Tenant deletion plan. <c>[GET /api/account/tenants/deletion]</c></summary>
+    public Task<JsonNode?> TenantDeletionPlanAsync(object? account = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/account/tenants/deletion", null, new Dictionary<string, object?> { ["account"] = account }, ct);
+
+    /// <summary>Tenant deletion status. <c>[GET /api/account/tenants/delete/status]</c></summary>
+    public Task<JsonNode?> TenantDeletionStatusAsync(object? account = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/account/tenants/delete/status", null, new Dictionary<string, object?> { ["account"] = account }, ct);
 }
 
 /// <summary>Admin operations.</summary>
@@ -1455,6 +1520,145 @@ public sealed partial class HiokCloudHierarchyApi
         => _c.InvokeAsync(new HttpMethod("GET"), "/api/HiokCloudHierarchy/hierarchy/" + HiokClient.Segment(id), null, null, ct);
 }
 
+/// <summary>HiokId operations.</summary>
+public sealed partial class HiokIdApi
+{
+    private readonly HiokClient _c;
+    internal HiokIdApi(HiokClient client) => _c = client;
+
+    /// <summary>Accept. <c>[POST /api/hiok-id/invitations/{id}/accept]</c></summary>
+    public Task<JsonNode?> AcceptAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/invitations/" + HiokClient.Segment(id) + "/accept", null, null, ct);
+
+    /// <summary>Add app credential. <c>[POST /api/hiok-id/apps/{id}/credentials]</c></summary>
+    public Task<JsonNode?> AddAppCredentialAsync(string id, object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/apps/" + HiokClient.Segment(id) + "/credentials", body, null, ct);
+
+    /// <summary>Add group member. <c>[POST /api/hiok-id/groups/{id}/members]</c></summary>
+    public Task<JsonNode?> AddGroupMemberAsync(string id, object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/groups/" + HiokClient.Segment(id) + "/members", body, null, ct);
+
+    /// <summary>Add sp credential. <c>[POST /api/hiok-id/service-principals/{id}/credentials]</c></summary>
+    public Task<JsonNode?> AddSpCredentialAsync(string id, object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/service-principals/" + HiokClient.Segment(id) + "/credentials", body, null, ct);
+
+    /// <summary>Apps. <c>[GET /api/hiok-id/apps]</c></summary>
+    public Task<JsonNode?> AppsAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/apps", null, null, ct);
+
+    /// <summary>Create app. <c>[POST /api/hiok-id/apps]</c></summary>
+    public Task<JsonNode?> CreateAppAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/apps", body, null, ct);
+
+    /// <summary>Create group. <c>[POST /api/hiok-id/groups]</c></summary>
+    public Task<JsonNode?> CreateGroupAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/groups", body, null, ct);
+
+    /// <summary>Create service principal. <c>[POST /api/hiok-id/service-principals]</c></summary>
+    public Task<JsonNode?> CreateServicePrincipalAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/service-principals", body, null, ct);
+
+    /// <summary>Create tenant. <c>[POST /api/hiok-id/tenants]</c></summary>
+    public Task<JsonNode?> CreateTenantAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/tenants", body, null, ct);
+
+    /// <summary>Decline. <c>[POST /api/hiok-id/invitations/{id}/decline]</c></summary>
+    public Task<JsonNode?> DeclineAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/invitations/" + HiokClient.Segment(id) + "/decline", null, null, ct);
+
+    /// <summary>Delete app. <c>[DELETE /api/hiok-id/apps/{id}]</c></summary>
+    public Task<JsonNode?> DeleteAppAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/hiok-id/apps/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>Delete group. <c>[DELETE /api/hiok-id/groups/{id}]</c></summary>
+    public Task<JsonNode?> DeleteGroupAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/hiok-id/groups/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>Delete service principal. <c>[DELETE /api/hiok-id/service-principals/{id}]</c></summary>
+    public Task<JsonNode?> DeleteServicePrincipalAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/hiok-id/service-principals/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>Directories. <c>[GET /api/hiok-id/directories]</c></summary>
+    public Task<JsonNode?> DirectoriesAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/directories", null, null, ct);
+
+    /// <summary>Enter. <c>[POST /api/hiok-id/directories/enter]</c></summary>
+    public Task<JsonNode?> EnterAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/directories/enter", body, null, ct);
+
+    /// <summary>Groups. <c>[GET /api/hiok-id/groups]</c></summary>
+    public Task<JsonNode?> GroupsAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/groups", null, null, ct);
+
+    /// <summary>Invite. <c>[POST /api/hiok-id/users]</c></summary>
+    public Task<JsonNode?> InviteAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/users", body, null, ct);
+
+    /// <summary>Leave. <c>[POST /api/hiok-id/directories/leave]</c></summary>
+    public Task<JsonNode?> LeaveAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/directories/leave", body, null, ct);
+
+    /// <summary>Me. <c>[GET /api/hiok-id/me]</c></summary>
+    public Task<JsonNode?> MeAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/me", null, null, ct);
+
+    /// <summary>Overview. <c>[GET /api/hiok-id/overview]</c></summary>
+    public Task<JsonNode?> OverviewAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/overview", null, null, ct);
+
+    /// <summary>Remove app credential. <c>[DELETE /api/hiok-id/apps/{id}/credentials/{credentialId}]</c></summary>
+    public Task<JsonNode?> RemoveAppCredentialAsync(string id, string credentialId, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/hiok-id/apps/" + HiokClient.Segment(id) + "/credentials/" + HiokClient.Segment(credentialId), null, null, ct);
+
+    /// <summary>Remove group member. <c>[DELETE /api/hiok-id/groups/{id}/members/{kind}/{reference}]</c></summary>
+    public Task<JsonNode?> RemoveGroupMemberAsync(string id, string kind, string reference, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/hiok-id/groups/" + HiokClient.Segment(id) + "/members/" + HiokClient.Segment(kind) + "/" + HiokClient.Segment(reference), null, null, ct);
+
+    /// <summary>Remove member. <c>[DELETE /api/hiok-id/users/{id}]</c></summary>
+    public Task<JsonNode?> RemoveMemberAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/hiok-id/users/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>Remove sp credential. <c>[DELETE /api/hiok-id/service-principals/{id}/credentials/{credentialId}]</c></summary>
+    public Task<JsonNode?> RemoveSpCredentialAsync(string id, string credentialId, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/hiok-id/service-principals/" + HiokClient.Segment(id) + "/credentials/" + HiokClient.Segment(credentialId), null, null, ct);
+
+    /// <summary>Rename directory. <c>[PUT /api/hiok-id/directory]</c></summary>
+    public Task<JsonNode?> RenameDirectoryAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("PUT"), "/api/hiok-id/directory", body, null, ct);
+
+    /// <summary>Resend. <c>[POST /api/hiok-id/users/{id}/resend]</c></summary>
+    public Task<JsonNode?> ResendAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/users/" + HiokClient.Segment(id) + "/resend", null, null, ct);
+
+    /// <summary>Service principals. <c>[GET /api/hiok-id/service-principals]</c></summary>
+    public Task<JsonNode?> ServicePrincipalsAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/service-principals", null, null, ct);
+
+    /// <summary>Sign ins. <c>[GET /api/hiok-id/sign-ins]</c></summary>
+    public Task<JsonNode?> SignInsAsync(object? take = null, object? outcome = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/sign-ins", null, new Dictionary<string, object?> { ["take"] = take, ["outcome"] = outcome }, ct);
+
+    /// <summary>Update app. <c>[PUT /api/hiok-id/apps/{id}]</c></summary>
+    public Task<JsonNode?> UpdateAppAsync(string id, object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("PUT"), "/api/hiok-id/apps/" + HiokClient.Segment(id), body, null, ct);
+
+    /// <summary>Update group. <c>[PUT /api/hiok-id/groups/{id}]</c></summary>
+    public Task<JsonNode?> UpdateGroupAsync(string id, object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("PUT"), "/api/hiok-id/groups/" + HiokClient.Segment(id), body, null, ct);
+
+    /// <summary>Update member. <c>[PUT /api/hiok-id/users/{id}]</c></summary>
+    public Task<JsonNode?> UpdateMemberAsync(string id, object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("PUT"), "/api/hiok-id/users/" + HiokClient.Segment(id), body, null, ct);
+
+    /// <summary>Update service principal. <c>[PUT /api/hiok-id/service-principals/{id}]</c></summary>
+    public Task<JsonNode?> UpdateServicePrincipalAsync(string id, object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("PUT"), "/api/hiok-id/service-principals/" + HiokClient.Segment(id), body, null, ct);
+
+    /// <summary>Users. <c>[GET /api/hiok-id/users]</c></summary>
+    public Task<JsonNode?> UsersAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/users", null, null, ct);
+}
+
 /// <summary>HiokUsers operations.</summary>
 public sealed partial class HiokUsersApi
 {
@@ -2330,6 +2534,41 @@ public sealed partial class OVSApi
     /// <summary>List bridges. <c>[GET /api/OVS/bridges]</c></summary>
     public Task<JsonNode?> ListBridgesAsync(CancellationToken ct = default)
         => _c.InvokeAsync(new HttpMethod("GET"), "/api/OVS/bridges", null, null, ct);
+}
+
+/// <summary>Oidc operations.</summary>
+public sealed partial class OidcApi
+{
+    private readonly HiokClient _c;
+    internal OidcApi(HiokClient client) => _c = client;
+
+    /// <summary>Approve. <c>[POST /api/hiok-id/oidc/authorize]</c></summary>
+    public Task<JsonNode?> ApproveAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/oidc/authorize", body, null, ct);
+
+    /// <summary>Authorize. <c>[GET /api/hiok-id/oidc/authorize]</c></summary>
+    public Task<JsonNode?> AuthorizeAsync(object? clientId = null, object? redirectUri = null, object? responseType = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/oidc/authorize", null, new Dictionary<string, object?> { ["client_id"] = clientId, ["redirect_uri"] = redirectUri, ["response_type"] = responseType }, ct);
+
+    /// <summary>Authorize info. <c>[GET /api/hiok-id/oidc/authorize/info]</c></summary>
+    public Task<JsonNode?> AuthorizeInfoAsync(object? clientId = null, object? redirectUri = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/oidc/authorize/info", null, new Dictionary<string, object?> { ["client_id"] = clientId, ["redirect_uri"] = redirectUri }, ct);
+
+    /// <summary>Discovery. <c>[GET /api/hiok-id/oidc/.well-known/openid-configuration]</c></summary>
+    public Task<JsonNode?> DiscoveryAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/oidc/.well-known/openid-configuration", null, null, ct);
+
+    /// <summary>Jwks. <c>[GET /api/hiok-id/oidc/jwks]</c></summary>
+    public Task<JsonNode?> JwksAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/oidc/jwks", null, null, ct);
+
+    /// <summary>Token. <c>[POST /api/hiok-id/oidc/token]</c></summary>
+    public Task<JsonNode?> TokenAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/hiok-id/oidc/token", body, null, ct);
+
+    /// <summary>User info. <c>[GET /api/hiok-id/oidc/userinfo]</c></summary>
+    public Task<JsonNode?> UserInfoAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/hiok-id/oidc/userinfo", null, null, ct);
 }
 
 /// <summary>Panel operations.</summary>

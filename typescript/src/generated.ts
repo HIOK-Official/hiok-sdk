@@ -56,6 +56,76 @@ export class AccessControlApi {
   }
 }
 
+/** Account operations. */
+export class AccountApi {
+  constructor(private readonly c: HiokTransport) {}
+
+  /** Api keys. `[GET /api/account/api-keys]` */
+  apiKeys(): Promise<any> {
+    return this.c.call('GET', `/api/account/api-keys`, undefined, undefined);
+  }
+
+  /** Change password. `[POST /api/account/password]` */
+  changePassword(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/account/password`, body, undefined);
+  }
+
+  /** Create api key. `[POST /api/account/api-keys]` */
+  createApiKey(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/account/api-keys`, body, undefined);
+  }
+
+  /** Delete account. `[POST /api/account/delete]` */
+  deleteAccount(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/account/delete`, body, undefined);
+  }
+
+  /** Delete tenant. `[POST /api/account/tenants/delete]` */
+  deleteTenant(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/account/tenants/delete`, body, undefined);
+  }
+
+  /** Deletion plan. `[GET /api/account/deletion]` */
+  deletionPlan(): Promise<any> {
+    return this.c.call('GET', `/api/account/deletion`, undefined, undefined);
+  }
+
+  /** Deletion status. `[GET /api/account/delete/status]` */
+  deletionStatus(): Promise<any> {
+    return this.c.call('GET', `/api/account/delete/status`, undefined, undefined);
+  }
+
+  /** Export. `[GET /api/account/export]` */
+  export_(query: { "format"?: unknown } = {}): Promise<any> {
+    return this.c.call('GET', `/api/account/export`, undefined, query);
+  }
+
+  /** Get preferences. `[GET /api/account/preferences]` */
+  getPreferences(): Promise<any> {
+    return this.c.call('GET', `/api/account/preferences`, undefined, undefined);
+  }
+
+  /** Revoke api key. `[DELETE /api/account/api-keys/{id}]` */
+  revokeApiKey(id: string): Promise<any> {
+    return this.c.call('DELETE', `/api/account/api-keys/${this.c.segment(id)}`, undefined, undefined);
+  }
+
+  /** Save preferences. `[PUT /api/account/preferences]` */
+  savePreferences(body?: unknown): Promise<any> {
+    return this.c.call('PUT', `/api/account/preferences`, body, undefined);
+  }
+
+  /** Tenant deletion plan. `[GET /api/account/tenants/deletion]` */
+  tenantDeletionPlan(query: { "account"?: unknown } = {}): Promise<any> {
+    return this.c.call('GET', `/api/account/tenants/deletion`, undefined, query);
+  }
+
+  /** Tenant deletion status. `[GET /api/account/tenants/delete/status]` */
+  tenantDeletionStatus(query: { "account"?: unknown } = {}): Promise<any> {
+    return this.c.call('GET', `/api/account/tenants/delete/status`, undefined, query);
+  }
+}
+
 /** Admin operations. */
 export class AdminApi {
   constructor(private readonly c: HiokTransport) {}
@@ -1451,6 +1521,176 @@ export class HiokCloudHierarchyApi {
   }
 }
 
+/** HiokId operations. */
+export class HiokIdApi {
+  constructor(private readonly c: HiokTransport) {}
+
+  /** Accept. `[POST /api/hiok-id/invitations/{id}/accept]` */
+  accept(id: string): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/invitations/${this.c.segment(id)}/accept`, undefined, undefined);
+  }
+
+  /** Add app credential. `[POST /api/hiok-id/apps/{id}/credentials]` */
+  addAppCredential(id: string, body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/apps/${this.c.segment(id)}/credentials`, body, undefined);
+  }
+
+  /** Add group member. `[POST /api/hiok-id/groups/{id}/members]` */
+  addGroupMember(id: string, body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/groups/${this.c.segment(id)}/members`, body, undefined);
+  }
+
+  /** Add sp credential. `[POST /api/hiok-id/service-principals/{id}/credentials]` */
+  addSpCredential(id: string, body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/service-principals/${this.c.segment(id)}/credentials`, body, undefined);
+  }
+
+  /** Apps. `[GET /api/hiok-id/apps]` */
+  apps(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/apps`, undefined, undefined);
+  }
+
+  /** Create app. `[POST /api/hiok-id/apps]` */
+  createApp(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/apps`, body, undefined);
+  }
+
+  /** Create group. `[POST /api/hiok-id/groups]` */
+  createGroup(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/groups`, body, undefined);
+  }
+
+  /** Create service principal. `[POST /api/hiok-id/service-principals]` */
+  createServicePrincipal(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/service-principals`, body, undefined);
+  }
+
+  /** Create tenant. `[POST /api/hiok-id/tenants]` */
+  createTenant(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/tenants`, body, undefined);
+  }
+
+  /** Decline. `[POST /api/hiok-id/invitations/{id}/decline]` */
+  decline(id: string): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/invitations/${this.c.segment(id)}/decline`, undefined, undefined);
+  }
+
+  /** Delete app. `[DELETE /api/hiok-id/apps/{id}]` */
+  deleteApp(id: string): Promise<any> {
+    return this.c.call('DELETE', `/api/hiok-id/apps/${this.c.segment(id)}`, undefined, undefined);
+  }
+
+  /** Delete group. `[DELETE /api/hiok-id/groups/{id}]` */
+  deleteGroup(id: string): Promise<any> {
+    return this.c.call('DELETE', `/api/hiok-id/groups/${this.c.segment(id)}`, undefined, undefined);
+  }
+
+  /** Delete service principal. `[DELETE /api/hiok-id/service-principals/{id}]` */
+  deleteServicePrincipal(id: string): Promise<any> {
+    return this.c.call('DELETE', `/api/hiok-id/service-principals/${this.c.segment(id)}`, undefined, undefined);
+  }
+
+  /** Directories. `[GET /api/hiok-id/directories]` */
+  directories(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/directories`, undefined, undefined);
+  }
+
+  /** Enter. `[POST /api/hiok-id/directories/enter]` */
+  enter(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/directories/enter`, body, undefined);
+  }
+
+  /** Groups. `[GET /api/hiok-id/groups]` */
+  groups(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/groups`, undefined, undefined);
+  }
+
+  /** Invite. `[POST /api/hiok-id/users]` */
+  invite(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/users`, body, undefined);
+  }
+
+  /** Leave. `[POST /api/hiok-id/directories/leave]` */
+  leave(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/directories/leave`, body, undefined);
+  }
+
+  /** Me. `[GET /api/hiok-id/me]` */
+  me(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/me`, undefined, undefined);
+  }
+
+  /** Overview. `[GET /api/hiok-id/overview]` */
+  overview(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/overview`, undefined, undefined);
+  }
+
+  /** Remove app credential. `[DELETE /api/hiok-id/apps/{id}/credentials/{credentialId}]` */
+  removeAppCredential(id: string, credentialId: string): Promise<any> {
+    return this.c.call('DELETE', `/api/hiok-id/apps/${this.c.segment(id)}/credentials/${this.c.segment(credentialId)}`, undefined, undefined);
+  }
+
+  /** Remove group member. `[DELETE /api/hiok-id/groups/{id}/members/{kind}/{reference}]` */
+  removeGroupMember(id: string, kind: string, reference: string): Promise<any> {
+    return this.c.call('DELETE', `/api/hiok-id/groups/${this.c.segment(id)}/members/${this.c.segment(kind)}/${this.c.segment(reference)}`, undefined, undefined);
+  }
+
+  /** Remove member. `[DELETE /api/hiok-id/users/{id}]` */
+  removeMember(id: string): Promise<any> {
+    return this.c.call('DELETE', `/api/hiok-id/users/${this.c.segment(id)}`, undefined, undefined);
+  }
+
+  /** Remove sp credential. `[DELETE /api/hiok-id/service-principals/{id}/credentials/{credentialId}]` */
+  removeSpCredential(id: string, credentialId: string): Promise<any> {
+    return this.c.call('DELETE', `/api/hiok-id/service-principals/${this.c.segment(id)}/credentials/${this.c.segment(credentialId)}`, undefined, undefined);
+  }
+
+  /** Rename directory. `[PUT /api/hiok-id/directory]` */
+  renameDirectory(body?: unknown): Promise<any> {
+    return this.c.call('PUT', `/api/hiok-id/directory`, body, undefined);
+  }
+
+  /** Resend. `[POST /api/hiok-id/users/{id}/resend]` */
+  resend(id: string): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/users/${this.c.segment(id)}/resend`, undefined, undefined);
+  }
+
+  /** Service principals. `[GET /api/hiok-id/service-principals]` */
+  servicePrincipals(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/service-principals`, undefined, undefined);
+  }
+
+  /** Sign ins. `[GET /api/hiok-id/sign-ins]` */
+  signIns(query: { "take"?: unknown; "outcome"?: unknown } = {}): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/sign-ins`, undefined, query);
+  }
+
+  /** Update app. `[PUT /api/hiok-id/apps/{id}]` */
+  updateApp(id: string, body?: unknown): Promise<any> {
+    return this.c.call('PUT', `/api/hiok-id/apps/${this.c.segment(id)}`, body, undefined);
+  }
+
+  /** Update group. `[PUT /api/hiok-id/groups/{id}]` */
+  updateGroup(id: string, body?: unknown): Promise<any> {
+    return this.c.call('PUT', `/api/hiok-id/groups/${this.c.segment(id)}`, body, undefined);
+  }
+
+  /** Update member. `[PUT /api/hiok-id/users/{id}]` */
+  updateMember(id: string, body?: unknown): Promise<any> {
+    return this.c.call('PUT', `/api/hiok-id/users/${this.c.segment(id)}`, body, undefined);
+  }
+
+  /** Update service principal. `[PUT /api/hiok-id/service-principals/{id}]` */
+  updateServicePrincipal(id: string, body?: unknown): Promise<any> {
+    return this.c.call('PUT', `/api/hiok-id/service-principals/${this.c.segment(id)}`, body, undefined);
+  }
+
+  /** Users. `[GET /api/hiok-id/users]` */
+  users(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/users`, undefined, undefined);
+  }
+}
+
 /** HiokUsers operations. */
 export class HiokUsersApi {
   constructor(private readonly c: HiokTransport) {}
@@ -2458,6 +2698,46 @@ export class OVSApi {
   /** List bridges. `[GET /api/OVS/bridges]` */
   listBridges(): Promise<any> {
     return this.c.call('GET', `/api/OVS/bridges`, undefined, undefined);
+  }
+}
+
+/** Oidc operations. */
+export class OidcApi {
+  constructor(private readonly c: HiokTransport) {}
+
+  /** Approve. `[POST /api/hiok-id/oidc/authorize]` */
+  approve(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/oidc/authorize`, body, undefined);
+  }
+
+  /** Authorize. `[GET /api/hiok-id/oidc/authorize]` */
+  authorize(query: { "client_id"?: unknown; "redirect_uri"?: unknown; "response_type"?: unknown } = {}): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/oidc/authorize`, undefined, query);
+  }
+
+  /** Authorize info. `[GET /api/hiok-id/oidc/authorize/info]` */
+  authorizeInfo(query: { "client_id"?: unknown; "redirect_uri"?: unknown } = {}): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/oidc/authorize/info`, undefined, query);
+  }
+
+  /** Discovery. `[GET /api/hiok-id/oidc/.well-known/openid-configuration]` */
+  discovery(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/oidc/.well-known/openid-configuration`, undefined, undefined);
+  }
+
+  /** Jwks. `[GET /api/hiok-id/oidc/jwks]` */
+  jwks(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/oidc/jwks`, undefined, undefined);
+  }
+
+  /** Token. `[POST /api/hiok-id/oidc/token]` */
+  token(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/hiok-id/oidc/token`, body, undefined);
+  }
+
+  /** User info. `[GET /api/hiok-id/oidc/userinfo]` */
+  userInfo(): Promise<any> {
+    return this.c.call('GET', `/api/hiok-id/oidc/userinfo`, undefined, undefined);
   }
 }
 
@@ -4724,6 +5004,7 @@ export class YugabyteApi {
 /** Every API operation, grouped as the API groups them: `client.api.<group>.<operation>()`. */
 export class Api {
   readonly accessControl: AccessControlApi;
+  readonly account: AccountApi;
   readonly admin: AdminApi;
   readonly adminData: AdminDataApi;
   readonly adminDns: AdminDnsApi;
@@ -4755,6 +5036,7 @@ export class Api {
   readonly hierarchyView: HierarchyViewApi;
   readonly hiokCloudGroups: HiokCloudGroupsApi;
   readonly hiokCloudHierarchy: HiokCloudHierarchyApi;
+  readonly hiokId: HiokIdApi;
   readonly hiokUsers: HiokUsersApi;
   readonly hybrid: HybridApi;
   readonly identity: IdentityApi;
@@ -4778,6 +5060,7 @@ export class Api {
   readonly notification: NotificationApi;
   readonly oAuth: OAuthApi;
   readonly oVS: OVSApi;
+  readonly oidc: OidcApi;
   readonly panel: PanelApi;
   readonly postgresDatabase: PostgresDatabaseApi;
   readonly pricing: PricingApi;
@@ -4816,6 +5099,7 @@ export class Api {
   readonly yugabyte: YugabyteApi;
   constructor(c: HiokTransport) {
     this.accessControl = new AccessControlApi(c);
+    this.account = new AccountApi(c);
     this.admin = new AdminApi(c);
     this.adminData = new AdminDataApi(c);
     this.adminDns = new AdminDnsApi(c);
@@ -4847,6 +5131,7 @@ export class Api {
     this.hierarchyView = new HierarchyViewApi(c);
     this.hiokCloudGroups = new HiokCloudGroupsApi(c);
     this.hiokCloudHierarchy = new HiokCloudHierarchyApi(c);
+    this.hiokId = new HiokIdApi(c);
     this.hiokUsers = new HiokUsersApi(c);
     this.hybrid = new HybridApi(c);
     this.identity = new IdentityApi(c);
@@ -4870,6 +5155,7 @@ export class Api {
     this.notification = new NotificationApi(c);
     this.oAuth = new OAuthApi(c);
     this.oVS = new OVSApi(c);
+    this.oidc = new OidcApi(c);
     this.panel = new PanelApi(c);
     this.postgresDatabase = new PostgresDatabaseApi(c);
     this.pricing = new PricingApi(c);

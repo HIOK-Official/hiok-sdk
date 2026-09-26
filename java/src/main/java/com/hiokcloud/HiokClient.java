@@ -195,7 +195,7 @@ public final class HiokClient {
             HttpRequest.Builder req = HttpRequest.newBuilder(URI.create(endpoint + path + query(query)))
                     .timeout(Duration.ofMinutes(10))
                     .header("Accept", "application/json")
-                    .header("User-Agent", "hiok-java-sdk/0.3");
+                    .header("User-Agent", "hiok-java-sdk/0.4");
             if (auth) authorize(req);
             if (headers != null) headers.forEach(req::header);
             if (payload != null && !(body instanceof byte[])) req.header("Content-Type", "application/json");

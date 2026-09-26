@@ -10,6 +10,7 @@ import (
 // Api holds every API operation, grouped as the API groups them: client.API().<Group>.<Operation>(ctx, ...).
 type Api struct {
 	AccessControl       *AccessControlApi
+	Account             *AccountApi
 	Admin               *AdminApi
 	AdminData           *AdminDataApi
 	AdminDns            *AdminDnsApi
@@ -41,6 +42,7 @@ type Api struct {
 	HierarchyView       *HierarchyViewApi
 	HiokCloudGroups     *HiokCloudGroupsApi
 	HiokCloudHierarchy  *HiokCloudHierarchyApi
+	HiokId              *HiokIdApi
 	HiokUsers           *HiokUsersApi
 	Hybrid              *HybridApi
 	Identity            *IdentityApi
@@ -64,6 +66,7 @@ type Api struct {
 	Notification        *NotificationApi
 	OAuth               *OAuthApi
 	OVS                 *OVSApi
+	Oidc                *OidcApi
 	Panel               *PanelApi
 	PostgresDatabase    *PostgresDatabaseApi
 	Pricing             *PricingApi
@@ -105,6 +108,7 @@ type Api struct {
 func newAPI(c *Client) *Api {
 	return &Api{
 		AccessControl:       &AccessControlApi{c: c},
+		Account:             &AccountApi{c: c},
 		Admin:               &AdminApi{c: c},
 		AdminData:           &AdminDataApi{c: c},
 		AdminDns:            &AdminDnsApi{c: c},
@@ -136,6 +140,7 @@ func newAPI(c *Client) *Api {
 		HierarchyView:       &HierarchyViewApi{c: c},
 		HiokCloudGroups:     &HiokCloudGroupsApi{c: c},
 		HiokCloudHierarchy:  &HiokCloudHierarchyApi{c: c},
+		HiokId:              &HiokIdApi{c: c},
 		HiokUsers:           &HiokUsersApi{c: c},
 		Hybrid:              &HybridApi{c: c},
 		Identity:            &IdentityApi{c: c},
@@ -159,6 +164,7 @@ func newAPI(c *Client) *Api {
 		Notification:        &NotificationApi{c: c},
 		OAuth:               &OAuthApi{c: c},
 		OVS:                 &OVSApi{c: c},
+		Oidc:                &OidcApi{c: c},
 		Panel:               &PanelApi{c: c},
 		PostgresDatabase:    &PostgresDatabaseApi{c: c},
 		Pricing:             &PricingApi{c: c},
@@ -249,6 +255,74 @@ func (a *AccessControlApi) RemoveRoleAssignment(ctx context.Context, resourceTyp
 // ScopeChain — Scope chain. [GET /api/access-control/{resourceType}/{resourceId}/scope-chain].
 func (a *AccessControlApi) ScopeChain(ctx context.Context, resourceType string, resourceId string) (json.RawMessage, error) {
 	return a.c.Call(ctx, "GET", "/api/access-control/"+segment(resourceType, false)+"/"+segment(resourceId, false)+"/scope-chain", nil, nil)
+}
+
+// AccountApi holds the Account operations.
+type AccountApi struct{ c *Client }
+
+// ApiKeys — Api keys. [GET /api/account/api-keys].
+func (a *AccountApi) ApiKeys(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/account/api-keys", nil, nil)
+}
+
+// ChangePassword — Change password. [POST /api/account/password].
+func (a *AccountApi) ChangePassword(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/account/password", body, nil)
+}
+
+// CreateApiKey — Create api key. [POST /api/account/api-keys].
+func (a *AccountApi) CreateApiKey(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/account/api-keys", body, nil)
+}
+
+// DeleteAccount — Delete account. [POST /api/account/delete].
+func (a *AccountApi) DeleteAccount(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/account/delete", body, nil)
+}
+
+// DeleteTenant — Delete tenant. [POST /api/account/tenants/delete].
+func (a *AccountApi) DeleteTenant(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/account/tenants/delete", body, nil)
+}
+
+// DeletionPlan — Deletion plan. [GET /api/account/deletion].
+func (a *AccountApi) DeletionPlan(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/account/deletion", nil, nil)
+}
+
+// DeletionStatus — Deletion status. [GET /api/account/delete/status].
+func (a *AccountApi) DeletionStatus(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/account/delete/status", nil, nil)
+}
+
+// Export — Export. [GET /api/account/export]. Query keys: format.
+func (a *AccountApi) Export(ctx context.Context, query Query) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/account/export", nil, query)
+}
+
+// GetPreferences — Get preferences. [GET /api/account/preferences].
+func (a *AccountApi) GetPreferences(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/account/preferences", nil, nil)
+}
+
+// RevokeApiKey — Revoke api key. [DELETE /api/account/api-keys/{id}].
+func (a *AccountApi) RevokeApiKey(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/account/api-keys/"+segment(id_, false), nil, nil)
+}
+
+// SavePreferences — Save preferences. [PUT /api/account/preferences].
+func (a *AccountApi) SavePreferences(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "PUT", "/api/account/preferences", body, nil)
+}
+
+// TenantDeletionPlan — Tenant deletion plan. [GET /api/account/tenants/deletion]. Query keys: account.
+func (a *AccountApi) TenantDeletionPlan(ctx context.Context, query Query) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/account/tenants/deletion", nil, query)
+}
+
+// TenantDeletionStatus — Tenant deletion status. [GET /api/account/tenants/delete/status]. Query keys: account.
+func (a *AccountApi) TenantDeletionStatus(ctx context.Context, query Query) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/account/tenants/delete/status", nil, query)
 }
 
 // AdminApi holds the Admin operations.
@@ -1584,6 +1658,174 @@ func (a *HiokCloudHierarchyApi) GetHierarchy(ctx context.Context, id_ string) (j
 	return a.c.Call(ctx, "GET", "/api/HiokCloudHierarchy/hierarchy/"+segment(id_, false), nil, nil)
 }
 
+// HiokIdApi holds the HiokId operations.
+type HiokIdApi struct{ c *Client }
+
+// Accept — Accept. [POST /api/hiok-id/invitations/{id}/accept].
+func (a *HiokIdApi) Accept(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/invitations/"+segment(id_, false)+"/accept", nil, nil)
+}
+
+// AddAppCredential — Add app credential. [POST /api/hiok-id/apps/{id}/credentials].
+func (a *HiokIdApi) AddAppCredential(ctx context.Context, id_ string, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/apps/"+segment(id_, false)+"/credentials", body, nil)
+}
+
+// AddGroupMember — Add group member. [POST /api/hiok-id/groups/{id}/members].
+func (a *HiokIdApi) AddGroupMember(ctx context.Context, id_ string, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/groups/"+segment(id_, false)+"/members", body, nil)
+}
+
+// AddSpCredential — Add sp credential. [POST /api/hiok-id/service-principals/{id}/credentials].
+func (a *HiokIdApi) AddSpCredential(ctx context.Context, id_ string, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/service-principals/"+segment(id_, false)+"/credentials", body, nil)
+}
+
+// Apps — Apps. [GET /api/hiok-id/apps].
+func (a *HiokIdApi) Apps(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/apps", nil, nil)
+}
+
+// CreateApp — Create app. [POST /api/hiok-id/apps].
+func (a *HiokIdApi) CreateApp(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/apps", body, nil)
+}
+
+// CreateGroup — Create group. [POST /api/hiok-id/groups].
+func (a *HiokIdApi) CreateGroup(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/groups", body, nil)
+}
+
+// CreateServicePrincipal — Create service principal. [POST /api/hiok-id/service-principals].
+func (a *HiokIdApi) CreateServicePrincipal(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/service-principals", body, nil)
+}
+
+// CreateTenant — Create tenant. [POST /api/hiok-id/tenants].
+func (a *HiokIdApi) CreateTenant(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/tenants", body, nil)
+}
+
+// Decline — Decline. [POST /api/hiok-id/invitations/{id}/decline].
+func (a *HiokIdApi) Decline(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/invitations/"+segment(id_, false)+"/decline", nil, nil)
+}
+
+// DeleteApp — Delete app. [DELETE /api/hiok-id/apps/{id}].
+func (a *HiokIdApi) DeleteApp(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/hiok-id/apps/"+segment(id_, false), nil, nil)
+}
+
+// DeleteGroup — Delete group. [DELETE /api/hiok-id/groups/{id}].
+func (a *HiokIdApi) DeleteGroup(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/hiok-id/groups/"+segment(id_, false), nil, nil)
+}
+
+// DeleteServicePrincipal — Delete service principal. [DELETE /api/hiok-id/service-principals/{id}].
+func (a *HiokIdApi) DeleteServicePrincipal(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/hiok-id/service-principals/"+segment(id_, false), nil, nil)
+}
+
+// Directories — Directories. [GET /api/hiok-id/directories].
+func (a *HiokIdApi) Directories(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/directories", nil, nil)
+}
+
+// Enter — Enter. [POST /api/hiok-id/directories/enter].
+func (a *HiokIdApi) Enter(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/directories/enter", body, nil)
+}
+
+// Groups — Groups. [GET /api/hiok-id/groups].
+func (a *HiokIdApi) Groups(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/groups", nil, nil)
+}
+
+// Invite — Invite. [POST /api/hiok-id/users].
+func (a *HiokIdApi) Invite(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/users", body, nil)
+}
+
+// Leave — Leave. [POST /api/hiok-id/directories/leave].
+func (a *HiokIdApi) Leave(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/directories/leave", body, nil)
+}
+
+// Me — Me. [GET /api/hiok-id/me].
+func (a *HiokIdApi) Me(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/me", nil, nil)
+}
+
+// Overview — Overview. [GET /api/hiok-id/overview].
+func (a *HiokIdApi) Overview(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/overview", nil, nil)
+}
+
+// RemoveAppCredential — Remove app credential. [DELETE /api/hiok-id/apps/{id}/credentials/{credentialId}].
+func (a *HiokIdApi) RemoveAppCredential(ctx context.Context, id_ string, credentialId string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/hiok-id/apps/"+segment(id_, false)+"/credentials/"+segment(credentialId, false), nil, nil)
+}
+
+// RemoveGroupMember — Remove group member. [DELETE /api/hiok-id/groups/{id}/members/{kind}/{reference}].
+func (a *HiokIdApi) RemoveGroupMember(ctx context.Context, id_ string, kind string, reference string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/hiok-id/groups/"+segment(id_, false)+"/members/"+segment(kind, false)+"/"+segment(reference, false), nil, nil)
+}
+
+// RemoveMember — Remove member. [DELETE /api/hiok-id/users/{id}].
+func (a *HiokIdApi) RemoveMember(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/hiok-id/users/"+segment(id_, false), nil, nil)
+}
+
+// RemoveSpCredential — Remove sp credential. [DELETE /api/hiok-id/service-principals/{id}/credentials/{credentialId}].
+func (a *HiokIdApi) RemoveSpCredential(ctx context.Context, id_ string, credentialId string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/hiok-id/service-principals/"+segment(id_, false)+"/credentials/"+segment(credentialId, false), nil, nil)
+}
+
+// RenameDirectory — Rename directory. [PUT /api/hiok-id/directory].
+func (a *HiokIdApi) RenameDirectory(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "PUT", "/api/hiok-id/directory", body, nil)
+}
+
+// Resend — Resend. [POST /api/hiok-id/users/{id}/resend].
+func (a *HiokIdApi) Resend(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/users/"+segment(id_, false)+"/resend", nil, nil)
+}
+
+// ServicePrincipals — Service principals. [GET /api/hiok-id/service-principals].
+func (a *HiokIdApi) ServicePrincipals(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/service-principals", nil, nil)
+}
+
+// SignIns — Sign ins. [GET /api/hiok-id/sign-ins]. Query keys: take, outcome.
+func (a *HiokIdApi) SignIns(ctx context.Context, query Query) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/sign-ins", nil, query)
+}
+
+// UpdateApp — Update app. [PUT /api/hiok-id/apps/{id}].
+func (a *HiokIdApi) UpdateApp(ctx context.Context, id_ string, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "PUT", "/api/hiok-id/apps/"+segment(id_, false), body, nil)
+}
+
+// UpdateGroup — Update group. [PUT /api/hiok-id/groups/{id}].
+func (a *HiokIdApi) UpdateGroup(ctx context.Context, id_ string, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "PUT", "/api/hiok-id/groups/"+segment(id_, false), body, nil)
+}
+
+// UpdateMember — Update member. [PUT /api/hiok-id/users/{id}].
+func (a *HiokIdApi) UpdateMember(ctx context.Context, id_ string, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "PUT", "/api/hiok-id/users/"+segment(id_, false), body, nil)
+}
+
+// UpdateServicePrincipal — Update service principal. [PUT /api/hiok-id/service-principals/{id}].
+func (a *HiokIdApi) UpdateServicePrincipal(ctx context.Context, id_ string, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "PUT", "/api/hiok-id/service-principals/"+segment(id_, false), body, nil)
+}
+
+// Users — Users. [GET /api/hiok-id/users].
+func (a *HiokIdApi) Users(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/users", nil, nil)
+}
+
 // HiokUsersApi holds the HiokUsers operations.
 type HiokUsersApi struct{ c *Client }
 
@@ -2546,6 +2788,44 @@ func (a *OVSApi) GetBridge(ctx context.Context, bridgeId string) (json.RawMessag
 // ListBridges — List bridges. [GET /api/OVS/bridges].
 func (a *OVSApi) ListBridges(ctx context.Context) (json.RawMessage, error) {
 	return a.c.Call(ctx, "GET", "/api/OVS/bridges", nil, nil)
+}
+
+// OidcApi holds the Oidc operations.
+type OidcApi struct{ c *Client }
+
+// Approve — Approve. [POST /api/hiok-id/oidc/authorize].
+func (a *OidcApi) Approve(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/oidc/authorize", body, nil)
+}
+
+// Authorize — Authorize. [GET /api/hiok-id/oidc/authorize]. Query keys: client_id, redirect_uri, response_type.
+func (a *OidcApi) Authorize(ctx context.Context, query Query) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/oidc/authorize", nil, query)
+}
+
+// AuthorizeInfo — Authorize info. [GET /api/hiok-id/oidc/authorize/info]. Query keys: client_id, redirect_uri.
+func (a *OidcApi) AuthorizeInfo(ctx context.Context, query Query) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/oidc/authorize/info", nil, query)
+}
+
+// Discovery — Discovery. [GET /api/hiok-id/oidc/.well-known/openid-configuration].
+func (a *OidcApi) Discovery(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/oidc/.well-known/openid-configuration", nil, nil)
+}
+
+// Jwks — Jwks. [GET /api/hiok-id/oidc/jwks].
+func (a *OidcApi) Jwks(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/oidc/jwks", nil, nil)
+}
+
+// Token — Token. [POST /api/hiok-id/oidc/token].
+func (a *OidcApi) Token(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/hiok-id/oidc/token", body, nil)
+}
+
+// UserInfo — User info. [GET /api/hiok-id/oidc/userinfo].
+func (a *OidcApi) UserInfo(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/hiok-id/oidc/userinfo", nil, nil)
 }
 
 // PanelApi holds the Panel operations.

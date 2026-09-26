@@ -6,6 +6,7 @@ import com.hiokcloud.HiokClient;
 /** Every API operation, grouped as the API groups them: {@code client.api().<group>().<operation>()}. */
 public final class Api {
     private final AccessControlApi accessControl;
+    private final AccountApi account;
     private final AdminApi admin;
     private final AdminDataApi adminData;
     private final AdminDnsApi adminDns;
@@ -37,6 +38,7 @@ public final class Api {
     private final HierarchyViewApi hierarchyView;
     private final HiokCloudGroupsApi hiokCloudGroups;
     private final HiokCloudHierarchyApi hiokCloudHierarchy;
+    private final HiokIdApi hiokId;
     private final HiokUsersApi hiokUsers;
     private final HybridApi hybrid;
     private final IdentityApi identity;
@@ -60,6 +62,7 @@ public final class Api {
     private final NotificationApi notification;
     private final OAuthApi oAuth;
     private final OVSApi oVS;
+    private final OidcApi oidc;
     private final PanelApi panel;
     private final PostgresDatabaseApi postgresDatabase;
     private final PricingApi pricing;
@@ -98,6 +101,7 @@ public final class Api {
     private final YugabyteApi yugabyte;
     public Api(HiokClient client) {
         this.accessControl = new AccessControlApi(client);
+        this.account = new AccountApi(client);
         this.admin = new AdminApi(client);
         this.adminData = new AdminDataApi(client);
         this.adminDns = new AdminDnsApi(client);
@@ -129,6 +133,7 @@ public final class Api {
         this.hierarchyView = new HierarchyViewApi(client);
         this.hiokCloudGroups = new HiokCloudGroupsApi(client);
         this.hiokCloudHierarchy = new HiokCloudHierarchyApi(client);
+        this.hiokId = new HiokIdApi(client);
         this.hiokUsers = new HiokUsersApi(client);
         this.hybrid = new HybridApi(client);
         this.identity = new IdentityApi(client);
@@ -152,6 +157,7 @@ public final class Api {
         this.notification = new NotificationApi(client);
         this.oAuth = new OAuthApi(client);
         this.oVS = new OVSApi(client);
+        this.oidc = new OidcApi(client);
         this.panel = new PanelApi(client);
         this.postgresDatabase = new PostgresDatabaseApi(client);
         this.pricing = new PricingApi(client);
@@ -190,6 +196,7 @@ public final class Api {
         this.yugabyte = new YugabyteApi(client);
     }
     public AccessControlApi accessControl() { return accessControl; }
+    public AccountApi account() { return account; }
     public AdminApi admin() { return admin; }
     public AdminDataApi adminData() { return adminData; }
     public AdminDnsApi adminDns() { return adminDns; }
@@ -221,6 +228,7 @@ public final class Api {
     public HierarchyViewApi hierarchyView() { return hierarchyView; }
     public HiokCloudGroupsApi hiokCloudGroups() { return hiokCloudGroups; }
     public HiokCloudHierarchyApi hiokCloudHierarchy() { return hiokCloudHierarchy; }
+    public HiokIdApi hiokId() { return hiokId; }
     public HiokUsersApi hiokUsers() { return hiokUsers; }
     public HybridApi hybrid() { return hybrid; }
     public IdentityApi identity() { return identity; }
@@ -244,6 +252,7 @@ public final class Api {
     public NotificationApi notification() { return notification; }
     public OAuthApi oAuth() { return oAuth; }
     public OVSApi oVS() { return oVS; }
+    public OidcApi oidc() { return oidc; }
     public PanelApi panel() { return panel; }
     public PostgresDatabaseApi postgresDatabase() { return postgresDatabase; }
     public PricingApi pricing() { return pricing; }

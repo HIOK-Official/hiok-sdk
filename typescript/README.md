@@ -1,6 +1,6 @@
 # @hiok/cloud — HIOK Cloud SDK for TypeScript and Node.js
 
-Every HIOK Cloud API operation (837 of them) plus a storage helper that moves files of any size.
+Every HIOK Cloud API operation (906 of them) plus a storage helper that moves files of any size.
 
 ```bash
 npm install @hiok/cloud
