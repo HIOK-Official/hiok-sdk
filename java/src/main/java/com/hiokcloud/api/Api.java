@@ -41,6 +41,7 @@ public final class Api {
     private final HybridApi hybrid;
     private final IdentityApi identity;
     private final InfrastructureApi infrastructure;
+    private final IntegrationsApi integrations;
     private final IoTDeviceGatewayApi ioTDeviceGateway;
     private final IoTHubApi ioTHub;
     private final IoTHubDeviceApi ioTHubDevice;
@@ -72,6 +73,7 @@ public final class Api {
     private final SandboxApi sandbox;
     private final SearchApi search;
     private final ServiceBusApi serviceBus;
+    private final SlackApi slack;
     private final SqlServerDatabaseApi sqlServerDatabase;
     private final StorageApi storage;
     private final StorageAccountApi storageAccount;
@@ -131,6 +133,7 @@ public final class Api {
         this.hybrid = new HybridApi(client);
         this.identity = new IdentityApi(client);
         this.infrastructure = new InfrastructureApi(client);
+        this.integrations = new IntegrationsApi(client);
         this.ioTDeviceGateway = new IoTDeviceGatewayApi(client);
         this.ioTHub = new IoTHubApi(client);
         this.ioTHubDevice = new IoTHubDeviceApi(client);
@@ -162,6 +165,7 @@ public final class Api {
         this.sandbox = new SandboxApi(client);
         this.search = new SearchApi(client);
         this.serviceBus = new ServiceBusApi(client);
+        this.slack = new SlackApi(client);
         this.sqlServerDatabase = new SqlServerDatabaseApi(client);
         this.storage = new StorageApi(client);
         this.storageAccount = new StorageAccountApi(client);
@@ -221,6 +225,7 @@ public final class Api {
     public HybridApi hybrid() { return hybrid; }
     public IdentityApi identity() { return identity; }
     public InfrastructureApi infrastructure() { return infrastructure; }
+    public IntegrationsApi integrations() { return integrations; }
     public IoTDeviceGatewayApi ioTDeviceGateway() { return ioTDeviceGateway; }
     public IoTHubApi ioTHub() { return ioTHub; }
     public IoTHubDeviceApi ioTHubDevice() { return ioTHubDevice; }
@@ -252,6 +257,7 @@ public final class Api {
     public SandboxApi sandbox() { return sandbox; }
     public SearchApi search() { return search; }
     public ServiceBusApi serviceBus() { return serviceBus; }
+    public SlackApi slack() { return slack; }
     public SqlServerDatabaseApi sqlServerDatabase() { return sqlServerDatabase; }
     public StorageApi storage() { return storage; }
     public StorageAccountApi storageAccount() { return storageAccount; }

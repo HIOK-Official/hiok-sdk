@@ -45,6 +45,7 @@ type Api struct {
 	Hybrid              *HybridApi
 	Identity            *IdentityApi
 	Infrastructure      *InfrastructureApi
+	Integrations        *IntegrationsApi
 	IoTDeviceGateway    *IoTDeviceGatewayApi
 	IoTHub              *IoTHubApi
 	IoTHubDevice        *IoTHubDeviceApi
@@ -76,6 +77,7 @@ type Api struct {
 	Sandbox             *SandboxApi
 	Search              *SearchApi
 	ServiceBus          *ServiceBusApi
+	Slack               *SlackApi
 	SqlServerDatabase   *SqlServerDatabaseApi
 	Storage             *StorageApi
 	StorageAccount      *StorageAccountApi
@@ -138,6 +140,7 @@ func newAPI(c *Client) *Api {
 		Hybrid:              &HybridApi{c: c},
 		Identity:            &IdentityApi{c: c},
 		Infrastructure:      &InfrastructureApi{c: c},
+		Integrations:        &IntegrationsApi{c: c},
 		IoTDeviceGateway:    &IoTDeviceGatewayApi{c: c},
 		IoTHub:              &IoTHubApi{c: c},
 		IoTHubDevice:        &IoTHubDeviceApi{c: c},
@@ -169,6 +172,7 @@ func newAPI(c *Client) *Api {
 		Sandbox:             &SandboxApi{c: c},
 		Search:              &SearchApi{c: c},
 		ServiceBus:          &ServiceBusApi{c: c},
+		Slack:               &SlackApi{c: c},
 		SqlServerDatabase:   &SqlServerDatabaseApi{c: c},
 		Storage:             &StorageApi{c: c},
 		StorageAccount:      &StorageAccountApi{c: c},
@@ -546,6 +550,16 @@ func (a *ApiManagementApi) DeleteOperation(ctx context.Context, id_ string) (jso
 // DeletePolicy — Delete policy. [DELETE /api/apim/policies/{id}].
 func (a *ApiManagementApi) DeletePolicy(ctx context.Context, id_ string) (json.RawMessage, error) {
 	return a.c.Call(ctx, "DELETE", "/api/apim/policies/"+segment(id_, false), nil, nil)
+}
+
+// DeleteProduct — Delete product. [DELETE /api/apim/products/{id}].
+func (a *ApiManagementApi) DeleteProduct(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/apim/products/"+segment(id_, false), nil, nil)
+}
+
+// DeleteSub — Delete sub. [DELETE /api/apim/subscriptions/{id}].
+func (a *ApiManagementApi) DeleteSub(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/apim/subscriptions/"+segment(id_, false), nil, nil)
 }
 
 // Gateway — Gateway. [GET /api/apim/gateway/{apiPath}/{rest}].
@@ -1407,6 +1421,16 @@ func (a *DownloadsApi) Sdk(ctx context.Context) (json.RawMessage, error) {
 	return a.c.Call(ctx, "GET", "/api/downloads/sdk.tar.gz", nil, nil)
 }
 
+// SdkPackage — Sdk package. [GET /api/downloads/sdk/{file}].
+func (a *DownloadsApi) SdkPackage(ctx context.Context, file string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/downloads/sdk/"+segment(file, false), nil, nil)
+}
+
+// SdkPackageList — Sdk package list. [GET /api/downloads/sdk].
+func (a *DownloadsApi) SdkPackageList(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/downloads/sdk", nil, nil)
+}
+
 // DpsApi holds the Dps operations.
 type DpsApi struct{ c *Client }
 
@@ -1760,6 +1784,39 @@ func (a *InfrastructureApi) Servers(ctx context.Context, region string) (json.Ra
 // SetReverse — Set reverse. [POST /api/Infrastructure/regions/{region}/reverse].
 func (a *InfrastructureApi) SetReverse(ctx context.Context, region string, body any) (json.RawMessage, error) {
 	return a.c.Call(ctx, "POST", "/api/Infrastructure/regions/"+segment(region, false)+"/reverse", body, nil)
+}
+
+// IntegrationsApi holds the Integrations operations.
+type IntegrationsApi struct{ c *Client }
+
+// Create — Create. [POST /api/integrations].
+func (a *IntegrationsApi) Create(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/integrations", body, nil)
+}
+
+// Delete — Delete. [DELETE /api/integrations/{id}].
+func (a *IntegrationsApi) Delete(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "DELETE", "/api/integrations/"+segment(id_, false), nil, nil)
+}
+
+// Get — Get. [GET /api/integrations/{id}].
+func (a *IntegrationsApi) Get(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/integrations/"+segment(id_, false), nil, nil)
+}
+
+// List — List. [GET /api/integrations].
+func (a *IntegrationsApi) List(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/integrations", nil, nil)
+}
+
+// Test — Test. [POST /api/integrations/{id}/test].
+func (a *IntegrationsApi) Test(ctx context.Context, id_ string) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/integrations/"+segment(id_, false)+"/test", nil, nil)
+}
+
+// Update — Update. [PUT /api/integrations/{id}].
+func (a *IntegrationsApi) Update(ctx context.Context, id_ string, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "PUT", "/api/integrations/"+segment(id_, false), body, nil)
 }
 
 // IoTDeviceGatewayApi holds the IoTDeviceGateway operations.
@@ -2443,6 +2500,11 @@ func (a *NotificationApi) GetNotification(ctx context.Context) (json.RawMessage,
 // OAuthApi holds the OAuth operations.
 type OAuthApi struct{ c *Client }
 
+// GetClientToken — Get client token. [POST /api/OAuth/token/client].
+func (a *OAuthApi) GetClientToken(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/OAuth/token/client", body, nil)
+}
+
 // GetToken — Get token. [POST /api/OAuth/token]. Query keys: handoff.
 func (a *OAuthApi) GetToken(ctx context.Context, body any, query Query) (json.RawMessage, error) {
 	return a.c.Call(ctx, "POST", "/api/OAuth/token", body, query)
@@ -3068,6 +3130,34 @@ func (a *ServiceBusApi) Settle(ctx context.Context, id_ string, entity string, b
 // UpdateQueue — Update queue. [PUT /api/ServiceBus/namespaces/{id}/queues/{name}].
 func (a *ServiceBusApi) UpdateQueue(ctx context.Context, id_ string, name string, body any) (json.RawMessage, error) {
 	return a.c.Call(ctx, "PUT", "/api/ServiceBus/namespaces/"+segment(id_, false)+"/queues/"+segment(name, false), body, nil)
+}
+
+// SlackApi holds the Slack operations.
+type SlackApi struct{ c *Client }
+
+// Command — Command. [POST /api/integrations/slack/command].
+func (a *SlackApi) Command(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/integrations/slack/command", nil, nil)
+}
+
+// ConfigInfo — Config info. [GET /api/integrations/slack/config].
+func (a *SlackApi) ConfigInfo(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/integrations/slack/config", nil, nil)
+}
+
+// Install — Install. [GET /api/integrations/slack/install].
+func (a *SlackApi) Install(ctx context.Context) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/integrations/slack/install", nil, nil)
+}
+
+// Link — Link. [POST /api/integrations/slack/link].
+func (a *SlackApi) Link(ctx context.Context, body any) (json.RawMessage, error) {
+	return a.c.Call(ctx, "POST", "/api/integrations/slack/link", body, nil)
+}
+
+// OAuth — OAuth. [GET /api/integrations/slack/oauth]. Query keys: code, state, error.
+func (a *SlackApi) OAuth(ctx context.Context, query Query) (json.RawMessage, error) {
+	return a.c.Call(ctx, "GET", "/api/integrations/slack/oauth", nil, query)
 }
 
 // SqlServerDatabaseApi holds the SqlServerDatabase operations.

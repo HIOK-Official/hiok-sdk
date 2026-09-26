@@ -35,4 +35,14 @@ public final class DownloadsApi {
     public JsonNode sdk() {
         return c.send("GET", "/api/downloads/sdk.tar.gz", null, null);
     }
+
+    /** Sdk package. [GET /api/downloads/sdk/{file}] */
+    public JsonNode sdkPackage(String file) {
+        return c.send("GET", "/api/downloads/sdk/" + HiokClient.segment(file), null, null);
+    }
+
+    /** Sdk package list. [GET /api/downloads/sdk] */
+    public JsonNode sdkPackageList() {
+        return c.send("GET", "/api/downloads/sdk", null, null);
+    }
 }

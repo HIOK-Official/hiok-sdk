@@ -319,6 +319,14 @@ class ApiManagementApi:
         """Delete policy.  [DELETE /api/apim/policies/{id}]"""
         return self._c.request("DELETE", "/api/apim/policies/" + self._c._seg(id_), None, query=None)
 
+    def delete_product(self, id_: str) -> Any:
+        """Delete product.  [DELETE /api/apim/products/{id}]"""
+        return self._c.request("DELETE", "/api/apim/products/" + self._c._seg(id_), None, query=None)
+
+    def delete_sub(self, id_: str) -> Any:
+        """Delete sub.  [DELETE /api/apim/subscriptions/{id}]"""
+        return self._c.request("DELETE", "/api/apim/subscriptions/" + self._c._seg(id_), None, query=None)
+
     def gateway(self, api_path: str, rest: str) -> Any:
         """Gateway.  [GET /api/apim/gateway/{apiPath}/{rest}]"""
         return self._c.request("GET", "/api/apim/gateway/" + self._c._seg(api_path) + "/" + self._c._seg(rest), None, query=None)
@@ -1071,6 +1079,14 @@ class DownloadsApi:
         """Sdk.  [GET /api/downloads/sdk.tar.gz]"""
         return self._c.request("GET", "/api/downloads/sdk.tar.gz", None, query=None)
 
+    def sdk_package(self, file: str) -> Any:
+        """Sdk package.  [GET /api/downloads/sdk/{file}]"""
+        return self._c.request("GET", "/api/downloads/sdk/" + self._c._seg(file), None, query=None)
+
+    def sdk_package_list(self) -> Any:
+        """Sdk package list.  [GET /api/downloads/sdk]"""
+        return self._c.request("GET", "/api/downloads/sdk", None, query=None)
+
 class DpsApi:
     """Dps operations."""
 
@@ -1390,6 +1406,36 @@ class InfrastructureApi:
     def set_reverse(self, region: str, body: Any = None) -> Any:
         """Set reverse.  [POST /api/Infrastructure/regions/{region}/reverse]"""
         return self._c.request("POST", "/api/Infrastructure/regions/" + self._c._seg(region) + "/reverse", body, query=None)
+
+class IntegrationsApi:
+    """Integrations operations."""
+
+    def __init__(self, client: "HiokClient"):
+        self._c = client
+
+    def create(self, body: Any = None) -> Any:
+        """Create.  [POST /api/integrations]"""
+        return self._c.request("POST", "/api/integrations", body, query=None)
+
+    def delete(self, id_: str) -> Any:
+        """Delete.  [DELETE /api/integrations/{id}]"""
+        return self._c.request("DELETE", "/api/integrations/" + self._c._seg(id_), None, query=None)
+
+    def get(self, id_: str) -> Any:
+        """Get.  [GET /api/integrations/{id}]"""
+        return self._c.request("GET", "/api/integrations/" + self._c._seg(id_), None, query=None)
+
+    def list(self) -> Any:
+        """List.  [GET /api/integrations]"""
+        return self._c.request("GET", "/api/integrations", None, query=None)
+
+    def test(self, id_: str) -> Any:
+        """Test.  [POST /api/integrations/{id}/test]"""
+        return self._c.request("POST", "/api/integrations/" + self._c._seg(id_) + "/test", None, query=None)
+
+    def update(self, id_: str, body: Any = None) -> Any:
+        """Update.  [PUT /api/integrations/{id}]"""
+        return self._c.request("PUT", "/api/integrations/" + self._c._seg(id_), body, query=None)
 
 class IoTDeviceGatewayApi:
     """IoTDeviceGateway operations."""
@@ -1997,6 +2043,10 @@ class OAuthApi:
     def __init__(self, client: "HiokClient"):
         self._c = client
 
+    def get_client_token(self, body: Any = None) -> Any:
+        """Get client token.  [POST /api/OAuth/token/client]"""
+        return self._c.request("POST", "/api/OAuth/token/client", body, query=None)
+
     def get_token(self, body: Any = None, *, handoff: Any = None) -> Any:
         """Get token.  [POST /api/OAuth/token]"""
         return self._c.request("POST", "/api/OAuth/token", body, query={"handoff": handoff})
@@ -2548,6 +2598,32 @@ class ServiceBusApi:
     def update_queue(self, id_: str, name: str, body: Any = None) -> Any:
         """Update queue.  [PUT /api/ServiceBus/namespaces/{id}/queues/{name}]"""
         return self._c.request("PUT", "/api/ServiceBus/namespaces/" + self._c._seg(id_) + "/queues/" + self._c._seg(name), body, query=None)
+
+class SlackApi:
+    """Slack operations."""
+
+    def __init__(self, client: "HiokClient"):
+        self._c = client
+
+    def command(self) -> Any:
+        """Command.  [POST /api/integrations/slack/command]"""
+        return self._c.request("POST", "/api/integrations/slack/command", None, query=None)
+
+    def config_info(self) -> Any:
+        """Config info.  [GET /api/integrations/slack/config]"""
+        return self._c.request("GET", "/api/integrations/slack/config", None, query=None)
+
+    def install(self) -> Any:
+        """Install.  [GET /api/integrations/slack/install]"""
+        return self._c.request("GET", "/api/integrations/slack/install", None, query=None)
+
+    def link(self, body: Any = None) -> Any:
+        """Link.  [POST /api/integrations/slack/link]"""
+        return self._c.request("POST", "/api/integrations/slack/link", body, query=None)
+
+    def o_auth(self, *, code: Any = None, state: Any = None, error: Any = None) -> Any:
+        """OAuth.  [GET /api/integrations/slack/oauth]"""
+        return self._c.request("GET", "/api/integrations/slack/oauth", None, query={"code": code, "state": state, "error": error})
 
 class SqlServerDatabaseApi:
     """SqlServerDatabase operations."""
@@ -3930,6 +4006,7 @@ class Api:
         self.hybrid = HybridApi(client)
         self.identity = IdentityApi(client)
         self.infrastructure = InfrastructureApi(client)
+        self.integrations = IntegrationsApi(client)
         self.io_t_device_gateway = IoTDeviceGatewayApi(client)
         self.io_t_hub = IoTHubApi(client)
         self.io_t_hub_device = IoTHubDeviceApi(client)
@@ -3961,6 +4038,7 @@ class Api:
         self.sandbox = SandboxApi(client)
         self.search = SearchApi(client)
         self.service_bus = ServiceBusApi(client)
+        self.slack = SlackApi(client)
         self.sql_server_database = SqlServerDatabaseApi(client)
         self.storage = StorageApi(client)
         self.storage_account = StorageAccountApi(client)

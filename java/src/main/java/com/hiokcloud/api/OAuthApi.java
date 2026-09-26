@@ -11,6 +11,11 @@ public final class OAuthApi {
     private final HiokClient c;
     public OAuthApi(HiokClient client) { this.c = client; }
 
+    /** Get client token. [POST /api/OAuth/token/client] */
+    public JsonNode getClientToken(Object body) {
+        return c.send("POST", "/api/OAuth/token/client", body, null);
+    }
+
     /** Get token. [POST /api/OAuth/token] */
     public JsonNode getToken(Object body, Object handoff) {
         Map<String, Object> query_ = new LinkedHashMap<>();

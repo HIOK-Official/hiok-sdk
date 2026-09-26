@@ -61,6 +61,16 @@ public final class ApiManagementApi {
         return c.send("DELETE", "/api/apim/policies/" + HiokClient.segment(id), null, null);
     }
 
+    /** Delete product. [DELETE /api/apim/products/{id}] */
+    public JsonNode deleteProduct(String id) {
+        return c.send("DELETE", "/api/apim/products/" + HiokClient.segment(id), null, null);
+    }
+
+    /** Delete sub. [DELETE /api/apim/subscriptions/{id}] */
+    public JsonNode deleteSub(String id) {
+        return c.send("DELETE", "/api/apim/subscriptions/" + HiokClient.segment(id), null, null);
+    }
+
     /** Gateway. [GET /api/apim/gateway/{apiPath}/{rest}] */
     public JsonNode gateway(String apiPath, String rest) {
         return c.send("GET", "/api/apim/gateway/" + HiokClient.segment(apiPath) + "/" + HiokClient.segment(rest), null, null);

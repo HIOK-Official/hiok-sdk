@@ -370,6 +370,16 @@ export class ApiManagementApi {
     return this.c.call('DELETE', `/api/apim/policies/${this.c.segment(id)}`, undefined, undefined);
   }
 
+  /** Delete product. `[DELETE /api/apim/products/{id}]` */
+  deleteProduct(id: string): Promise<any> {
+    return this.c.call('DELETE', `/api/apim/products/${this.c.segment(id)}`, undefined, undefined);
+  }
+
+  /** Delete sub. `[DELETE /api/apim/subscriptions/{id}]` */
+  deleteSub(id: string): Promise<any> {
+    return this.c.call('DELETE', `/api/apim/subscriptions/${this.c.segment(id)}`, undefined, undefined);
+  }
+
   /** Gateway. `[GET /api/apim/gateway/{apiPath}/{rest}]` */
   gateway(apiPath: string, rest: string): Promise<any> {
     return this.c.call('GET', `/api/apim/gateway/${this.c.segment(apiPath)}/${this.c.segment(rest)}`, undefined, undefined);
@@ -1264,6 +1274,16 @@ export class DownloadsApi {
   sdk(): Promise<any> {
     return this.c.call('GET', `/api/downloads/sdk.tar.gz`, undefined, undefined);
   }
+
+  /** Sdk package. `[GET /api/downloads/sdk/{file}]` */
+  sdkPackage(file: string): Promise<any> {
+    return this.c.call('GET', `/api/downloads/sdk/${this.c.segment(file)}`, undefined, undefined);
+  }
+
+  /** Sdk package list. `[GET /api/downloads/sdk]` */
+  sdkPackageList(): Promise<any> {
+    return this.c.call('GET', `/api/downloads/sdk`, undefined, undefined);
+  }
 }
 
 /** Dps operations. */
@@ -1638,6 +1658,41 @@ export class InfrastructureApi {
   /** Set reverse. `[POST /api/Infrastructure/regions/{region}/reverse]` */
   setReverse(region: string, body?: unknown): Promise<any> {
     return this.c.call('POST', `/api/Infrastructure/regions/${this.c.segment(region)}/reverse`, body, undefined);
+  }
+}
+
+/** Integrations operations. */
+export class IntegrationsApi {
+  constructor(private readonly c: HiokTransport) {}
+
+  /** Create. `[POST /api/integrations]` */
+  create(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/integrations`, body, undefined);
+  }
+
+  /** Delete. `[DELETE /api/integrations/{id}]` */
+  delete_(id: string): Promise<any> {
+    return this.c.call('DELETE', `/api/integrations/${this.c.segment(id)}`, undefined, undefined);
+  }
+
+  /** Get. `[GET /api/integrations/{id}]` */
+  get(id: string): Promise<any> {
+    return this.c.call('GET', `/api/integrations/${this.c.segment(id)}`, undefined, undefined);
+  }
+
+  /** List. `[GET /api/integrations]` */
+  list(): Promise<any> {
+    return this.c.call('GET', `/api/integrations`, undefined, undefined);
+  }
+
+  /** Test. `[POST /api/integrations/{id}/test]` */
+  test(id: string): Promise<any> {
+    return this.c.call('POST', `/api/integrations/${this.c.segment(id)}/test`, undefined, undefined);
+  }
+
+  /** Update. `[PUT /api/integrations/{id}]` */
+  update(id: string, body?: unknown): Promise<any> {
+    return this.c.call('PUT', `/api/integrations/${this.c.segment(id)}`, body, undefined);
   }
 }
 
@@ -2355,6 +2410,11 @@ export class NotificationApi {
 export class OAuthApi {
   constructor(private readonly c: HiokTransport) {}
 
+  /** Get client token. `[POST /api/OAuth/token/client]` */
+  getClientToken(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/OAuth/token/client`, body, undefined);
+  }
+
   /** Get token. `[POST /api/OAuth/token]` */
   getToken(body?: unknown, query: { "handoff"?: unknown } = {}): Promise<any> {
     return this.c.call('POST', `/api/OAuth/token`, body, query);
@@ -3008,6 +3068,36 @@ export class ServiceBusApi {
   /** Update queue. `[PUT /api/ServiceBus/namespaces/{id}/queues/{name}]` */
   updateQueue(id: string, name: string, body?: unknown): Promise<any> {
     return this.c.call('PUT', `/api/ServiceBus/namespaces/${this.c.segment(id)}/queues/${this.c.segment(name)}`, body, undefined);
+  }
+}
+
+/** Slack operations. */
+export class SlackApi {
+  constructor(private readonly c: HiokTransport) {}
+
+  /** Command. `[POST /api/integrations/slack/command]` */
+  command(): Promise<any> {
+    return this.c.call('POST', `/api/integrations/slack/command`, undefined, undefined);
+  }
+
+  /** Config info. `[GET /api/integrations/slack/config]` */
+  configInfo(): Promise<any> {
+    return this.c.call('GET', `/api/integrations/slack/config`, undefined, undefined);
+  }
+
+  /** Install. `[GET /api/integrations/slack/install]` */
+  install(): Promise<any> {
+    return this.c.call('GET', `/api/integrations/slack/install`, undefined, undefined);
+  }
+
+  /** Link. `[POST /api/integrations/slack/link]` */
+  link(body?: unknown): Promise<any> {
+    return this.c.call('POST', `/api/integrations/slack/link`, body, undefined);
+  }
+
+  /** OAuth. `[GET /api/integrations/slack/oauth]` */
+  oAuth(query: { "code"?: unknown; "state"?: unknown; "error"?: unknown } = {}): Promise<any> {
+    return this.c.call('GET', `/api/integrations/slack/oauth`, undefined, query);
   }
 }
 
@@ -4669,6 +4759,7 @@ export class Api {
   readonly hybrid: HybridApi;
   readonly identity: IdentityApi;
   readonly infrastructure: InfrastructureApi;
+  readonly integrations: IntegrationsApi;
   readonly ioTDeviceGateway: IoTDeviceGatewayApi;
   readonly ioTHub: IoTHubApi;
   readonly ioTHubDevice: IoTHubDeviceApi;
@@ -4700,6 +4791,7 @@ export class Api {
   readonly sandbox: SandboxApi;
   readonly search: SearchApi;
   readonly serviceBus: ServiceBusApi;
+  readonly slack: SlackApi;
   readonly sqlServerDatabase: SqlServerDatabaseApi;
   readonly storage: StorageApi;
   readonly storageAccount: StorageAccountApi;
@@ -4759,6 +4851,7 @@ export class Api {
     this.hybrid = new HybridApi(c);
     this.identity = new IdentityApi(c);
     this.infrastructure = new InfrastructureApi(c);
+    this.integrations = new IntegrationsApi(c);
     this.ioTDeviceGateway = new IoTDeviceGatewayApi(c);
     this.ioTHub = new IoTHubApi(c);
     this.ioTHubDevice = new IoTHubDeviceApi(c);
@@ -4790,6 +4883,7 @@ export class Api {
     this.sandbox = new SandboxApi(c);
     this.search = new SearchApi(c);
     this.serviceBus = new ServiceBusApi(c);
+    this.slack = new SlackApi(c);
     this.sqlServerDatabase = new SqlServerDatabaseApi(c);
     this.storage = new StorageApi(c);
     this.storageAccount = new StorageAccountApi(c);

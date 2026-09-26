@@ -47,6 +47,7 @@ public sealed partial class HiokApi
     public HybridApi Hybrid { get; }
     public IdentityApi Identity { get; }
     public InfrastructureApi Infrastructure { get; }
+    public IntegrationsApi Integrations { get; }
     public IoTDeviceGatewayApi IoTDeviceGateway { get; }
     public IoTHubApi IoTHub { get; }
     public IoTHubDeviceApi IoTHubDevice { get; }
@@ -78,6 +79,7 @@ public sealed partial class HiokApi
     public SandboxApi Sandbox { get; }
     public SearchApi Search { get; }
     public ServiceBusApi ServiceBus { get; }
+    public SlackApi Slack { get; }
     public SqlServerDatabaseApi SqlServerDatabase { get; }
     public StorageApi Storage { get; }
     public StorageAccountApi StorageAccount { get; }
@@ -139,6 +141,7 @@ public sealed partial class HiokApi
         Hybrid = new HybridApi(client);
         Identity = new IdentityApi(client);
         Infrastructure = new InfrastructureApi(client);
+        Integrations = new IntegrationsApi(client);
         IoTDeviceGateway = new IoTDeviceGatewayApi(client);
         IoTHub = new IoTHubApi(client);
         IoTHubDevice = new IoTHubDeviceApi(client);
@@ -170,6 +173,7 @@ public sealed partial class HiokApi
         Sandbox = new SandboxApi(client);
         Search = new SearchApi(client);
         ServiceBus = new ServiceBusApi(client);
+        Slack = new SlackApi(client);
         SqlServerDatabase = new SqlServerDatabaseApi(client);
         Storage = new StorageApi(client);
         StorageAccount = new StorageAccountApi(client);
@@ -513,6 +517,14 @@ public sealed partial class ApiManagementApi
     /// <summary>Delete policy. <c>[DELETE /api/apim/policies/{id}]</c></summary>
     public Task<JsonNode?> DeletePolicyAsync(string id, CancellationToken ct = default)
         => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/apim/policies/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>Delete product. <c>[DELETE /api/apim/products/{id}]</c></summary>
+    public Task<JsonNode?> DeleteProductAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/apim/products/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>Delete sub. <c>[DELETE /api/apim/subscriptions/{id}]</c></summary>
+    public Task<JsonNode?> DeleteSubAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/apim/subscriptions/" + HiokClient.Segment(id), null, null, ct);
 
     /// <summary>Gateway. <c>[GET /api/apim/gateway/{apiPath}/{rest}]</c></summary>
     public Task<JsonNode?> GatewayAsync(string apiPath, string rest, CancellationToken ct = default)
@@ -1283,6 +1295,14 @@ public sealed partial class DownloadsApi
     /// <summary>Sdk. <c>[GET /api/downloads/sdk.tar.gz]</c></summary>
     public Task<JsonNode?> SdkAsync(CancellationToken ct = default)
         => _c.InvokeAsync(new HttpMethod("GET"), "/api/downloads/sdk.tar.gz", null, null, ct);
+
+    /// <summary>Sdk package. <c>[GET /api/downloads/sdk/{file}]</c></summary>
+    public Task<JsonNode?> SdkPackageAsync(string file, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/downloads/sdk/" + HiokClient.Segment(file), null, null, ct);
+
+    /// <summary>Sdk package list. <c>[GET /api/downloads/sdk]</c></summary>
+    public Task<JsonNode?> SdkPackageListAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/downloads/sdk", null, null, ct);
 }
 
 /// <summary>Dps operations.</summary>
@@ -1613,6 +1633,37 @@ public sealed partial class InfrastructureApi
     /// <summary>Set reverse. <c>[POST /api/Infrastructure/regions/{region}/reverse]</c></summary>
     public Task<JsonNode?> SetReverseAsync(string region, object? body = null, CancellationToken ct = default)
         => _c.InvokeAsync(new HttpMethod("POST"), "/api/Infrastructure/regions/" + HiokClient.Segment(region) + "/reverse", body, null, ct);
+}
+
+/// <summary>Integrations operations.</summary>
+public sealed partial class IntegrationsApi
+{
+    private readonly HiokClient _c;
+    internal IntegrationsApi(HiokClient client) => _c = client;
+
+    /// <summary>Create. <c>[POST /api/integrations]</c></summary>
+    public Task<JsonNode?> CreateAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/integrations", body, null, ct);
+
+    /// <summary>Delete. <c>[DELETE /api/integrations/{id}]</c></summary>
+    public Task<JsonNode?> DeleteAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("DELETE"), "/api/integrations/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>Get. <c>[GET /api/integrations/{id}]</c></summary>
+    public Task<JsonNode?> GetAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/integrations/" + HiokClient.Segment(id), null, null, ct);
+
+    /// <summary>List. <c>[GET /api/integrations]</c></summary>
+    public Task<JsonNode?> ListAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/integrations", null, null, ct);
+
+    /// <summary>Test. <c>[POST /api/integrations/{id}/test]</c></summary>
+    public Task<JsonNode?> TestAsync(string id, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/integrations/" + HiokClient.Segment(id) + "/test", null, null, ct);
+
+    /// <summary>Update. <c>[PUT /api/integrations/{id}]</c></summary>
+    public Task<JsonNode?> UpdateAsync(string id, object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("PUT"), "/api/integrations/" + HiokClient.Segment(id), body, null, ct);
 }
 
 /// <summary>IoTDeviceGateway operations.</summary>
@@ -2237,6 +2288,10 @@ public sealed partial class OAuthApi
     private readonly HiokClient _c;
     internal OAuthApi(HiokClient client) => _c = client;
 
+    /// <summary>Get client token. <c>[POST /api/OAuth/token/client]</c></summary>
+    public Task<JsonNode?> GetClientTokenAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/OAuth/token/client", body, null, ct);
+
     /// <summary>Get token. <c>[POST /api/OAuth/token]</c></summary>
     public Task<JsonNode?> GetTokenAsync(object? body = null, object? handoff = null, CancellationToken ct = default)
         => _c.InvokeAsync(new HttpMethod("POST"), "/api/OAuth/token", body, new Dictionary<string, object?> { ["handoff"] = handoff }, ct);
@@ -2802,6 +2857,33 @@ public sealed partial class ServiceBusApi
     /// <summary>Update queue. <c>[PUT /api/ServiceBus/namespaces/{id}/queues/{name}]</c></summary>
     public Task<JsonNode?> UpdateQueueAsync(string id, string name, object? body = null, CancellationToken ct = default)
         => _c.InvokeAsync(new HttpMethod("PUT"), "/api/ServiceBus/namespaces/" + HiokClient.Segment(id) + "/queues/" + HiokClient.Segment(name), body, null, ct);
+}
+
+/// <summary>Slack operations.</summary>
+public sealed partial class SlackApi
+{
+    private readonly HiokClient _c;
+    internal SlackApi(HiokClient client) => _c = client;
+
+    /// <summary>Command. <c>[POST /api/integrations/slack/command]</c></summary>
+    public Task<JsonNode?> CommandAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/integrations/slack/command", null, null, ct);
+
+    /// <summary>Config info. <c>[GET /api/integrations/slack/config]</c></summary>
+    public Task<JsonNode?> ConfigInfoAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/integrations/slack/config", null, null, ct);
+
+    /// <summary>Install. <c>[GET /api/integrations/slack/install]</c></summary>
+    public Task<JsonNode?> InstallAsync(CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/integrations/slack/install", null, null, ct);
+
+    /// <summary>Link. <c>[POST /api/integrations/slack/link]</c></summary>
+    public Task<JsonNode?> LinkAsync(object? body = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("POST"), "/api/integrations/slack/link", body, null, ct);
+
+    /// <summary>OAuth. <c>[GET /api/integrations/slack/oauth]</c></summary>
+    public Task<JsonNode?> OAuthAsync(object? code = null, object? state = null, object? error = null, CancellationToken ct = default)
+        => _c.InvokeAsync(new HttpMethod("GET"), "/api/integrations/slack/oauth", null, new Dictionary<string, object?> { ["code"] = code, ["state"] = state, ["error"] = error }, ct);
 }
 
 /// <summary>SqlServerDatabase operations.</summary>

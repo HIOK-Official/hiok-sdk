@@ -1,6 +1,6 @@
 {
   "name": "@hiok/cloud",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Official TypeScript SDK for HIOK Cloud",
   "license": "MIT",
   "type": "module",
