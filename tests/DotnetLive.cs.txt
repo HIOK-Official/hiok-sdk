@@ -1,0 +1,23 @@
+using System.Security.Cryptography;
+using Hiok.Cloud;
+var c = new HiokClient(Environment.GetEnvironmentVariable("HIOK_ENDPOINT") ?? "https://test.hiokcloud.com", Environment.GetEnvironmentVariable("HIOK_TOKEN"));
+Console.WriteLine($"key vaults: {(await c.Api.KeyVault.ListAsync())?.AsArray().Count}");
+var accounts = (await c.Api.StorageAccount.GetStorageAccountsAsync())!["data"]!.AsArray();
+var acct = accounts.First(a => a!["name"]!.GetValue<string>() == Environment.GetEnvironmentVariable("HIOK_TEST_STORAGE_ACCOUNT"))!["id"]!.GetValue<string>();
+await c.Storage.EnsureContainerAsync(acct, "sdk-test-dotnet");
+var data = RandomNumberGenerator.GetBytes(20 * 1024 * 1024 + 7);
+var sw = System.Diagnostics.Stopwatch.StartNew();
+await c.Storage.UploadStreamAsync(acct, "sdk-test-dotnet", "big/20mb.bin", new MemoryStream(data));
+var up = sw.Elapsed.TotalSeconds; sw.Restart();
+await c.Storage.DownloadFileAsync(acct, "sdk-test-dotnet", "big/20mb.bin", "/tmp/hiok-sdk-test.bin");
+Console.WriteLine($"20MB upload {up:F1}s download {sw.Elapsed.TotalSeconds:F1}s identical: {SHA256.HashData(File.ReadAllBytes("/tmp/hiok-sdk-test.bin")).SequenceEqual(SHA256.HashData(data))}");
+await c.Storage.UploadStreamAsync(acct, "sdk-test-dotnet", "small.txt", new MemoryStream("hello from dotnet"u8.ToArray()));
+var keys = (await c.Api.StorageAccount.GetAccessKeysAsync(acct))!["data"]!;
+var k = new HiokClient(Environment.GetEnvironmentVariable("HIOK_ENDPOINT") ?? "https://test.hiokcloud.com") { StorageKey = keys["key1"]!.GetValue<string>() };
+var ms = new MemoryStream(); await k.Storage.DownloadStreamAsync(acct, "sdk-test-dotnet", "small.txt", ms);
+Console.WriteLine($"storage key read: {System.Text.Encoding.UTF8.GetString(ms.ToArray())}");
+try { await k.Api.KeyVault.ListAsync(); Console.WriteLine("BAD: key reached Key Vault"); } catch (HiokException e) { Console.WriteLine($"storage key refused elsewhere: {(int?)e.StatusCode}"); }
+foreach (var o in await c.Storage.ListAsync(acct, "sdk-test-dotnet")) await c.Storage.DeleteAsync(acct, "sdk-test-dotnet", o!["key"]!.GetValue<string>());
+Console.WriteLine($"after delete: {(await c.Storage.ListAsync(acct, "sdk-test-dotnet")).Count}");
+await c.Api.StorageObject.DeleteContainerAsync(acct, "sdk-test-dotnet", force: true);
+try { await c.Api.KeyVault.GetAsync("00000000-0000-0000-0000-000000000000"); } catch (HiokException e) { Console.WriteLine($"typed error: {(int?)e.StatusCode} body={(e.Body != null)}"); }

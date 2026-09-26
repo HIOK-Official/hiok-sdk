@@ -1,0 +1,83 @@
+package main
+
+import (
+	"bytes"
+	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"os"
+	"strings"
+	"time"
+
+	hiok "github.com/HIOK-Official/hiok-sdk/go"
+)
+
+func main() {
+	ctx := context.Background()
+	tok := []byte(os.Getenv("HIOK_TOKEN"))
+	c := hiok.New(endpoint(), strings.TrimSpace(string(tok)))
+	raw, err := c.API().KeyVault.List(ctx)
+	fmt.Println("key vaults raw ok:", err == nil, len(raw) > 0)
+	var accts struct{ Data []struct{ ID, Name string } }
+	r, _ := c.API().StorageAccount.GetStorageAccounts(ctx)
+	json.Unmarshal(r, &accts)
+	var acct string
+	for _, a := range accts.Data {
+		if a.Name == os.Getenv("HIOK_TEST_STORAGE_ACCOUNT") {
+			acct = a.ID
+		}
+	}
+	s := c.Storage()
+	must(s.EnsureContainer(ctx, acct, "sdk-test-go", "blob"))
+	data := make([]byte, 20*1024*1024+3)
+	rand.Read(data)
+	t := time.Now()
+	_, err = s.UploadStream(ctx, acct, "sdk-test-go", "big/20mb.bin", bytes.NewReader(data), "")
+	must(err)
+	up := time.Since(t)
+	t = time.Now()
+	_, err = s.DownloadFile(ctx, acct, "sdk-test-go", "big/20mb.bin", "/tmp/hiok-sdk-test.bin")
+	must(err)
+	got, _ := os.ReadFile("/tmp/hiok-sdk-test.bin")
+	fmt.Printf("20MB upload %.1fs download %.1fs identical: %v\n", up.Seconds(), time.Since(t).Seconds(), sha256.Sum256(got) == sha256.Sum256(data))
+	os.Remove("/tmp/hiok-sdk-test.bin")
+	_, err = s.UploadStream(ctx, acct, "sdk-test-go", "small.txt", strings.NewReader("hello from go"), "text/plain")
+	must(err)
+	var keys struct{ Data struct{ Key1 string } }
+	kr, _ := c.API().StorageAccount.GetAccessKeys(ctx, acct)
+	json.Unmarshal(kr, &keys)
+	k := hiok.New(endpoint(), "")
+	k.StorageKey = keys.Data.Key1
+	var buf bytes.Buffer
+	_, err = k.Storage().DownloadStream(ctx, acct, "sdk-test-go", "small.txt", &buf)
+	must(err)
+	fmt.Println("storage key read:", buf.String())
+	_, err = k.API().KeyVault.List(ctx)
+	var apiErr *hiok.APIError
+	fmt.Println("storage key refused elsewhere:", errors.As(err, &apiErr) && apiErr.Status == 403)
+	objs, _ := s.List(ctx, acct, "sdk-test-go", "")
+	for _, o := range objs {
+		must(s.Delete(ctx, acct, "sdk-test-go", o.Key))
+	}
+	objs, _ = s.List(ctx, acct, "sdk-test-go", "")
+	fmt.Println("after delete:", len(objs))
+	_, err = c.API().StorageObject.DeleteContainer(ctx, acct, "sdk-test-go", hiok.Query{"force": true})
+	must(err)
+}
+
+func must(err error) {
+	if err != nil {
+		fmt.Println("ERROR:", err)
+		os.Exit(1)
+	}
+}
+
+func endpoint() string {
+	if e := os.Getenv("HIOK_ENDPOINT"); e != "" {
+		return e
+	}
+	return "https://test.hiokcloud.com"
+}

@@ -15,6 +15,8 @@ jobs:
         with: {python-version: '3.12'}
       - uses: actions/setup-dotnet@v4
         with: {dotnet-version: '10.0.x'}
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '17'}
       - run: go test ./...
         working-directory: go
       - run: npm ci && npm test
@@ -23,3 +25,5 @@ jobs:
         working-directory: python
       - run: dotnet build -c Release
         working-directory: dotnet/Hiok.Cloud
+      - run: mvn -B -q package -DskipTests
+        working-directory: java

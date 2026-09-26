@@ -1,0 +1,26 @@
+import { HiokClient, HiokError } from '../typescript/dist/index.js';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { createHash, randomBytes } from 'node:crypto';
+const c = new HiokClient({ endpoint: process.env.HIOK_ENDPOINT ?? 'https://test.hiokcloud.com', token: process.env.HIOK_TOKEN });
+console.log('key vaults:', (await c.api.keyVault.list()).length);
+const acct = (await c.api.storageAccount.getStorageAccounts()).data.find(a => a.name === process.env.HIOK_TEST_STORAGE_ACCOUNT).id;
+await c.storage.ensureContainer(acct, 'sdk-test-ts');
+const data = randomBytes(20 * 1024 * 1024 + 5);
+writeFileSync('/tmp/hiok-sdk-ts20.src', data);
+let t = Date.now(); await c.storage.uploadFile(acct, 'sdk-test-ts', 'big/20mb.bin', '/tmp/hiok-sdk-ts20.src'); const up = (Date.now() - t) / 1000;
+t = Date.now(); await c.storage.downloadFile(acct, 'sdk-test-ts', 'big/20mb.bin', '/tmp/hiok-sdk-ts20.dst');
+const h = b => createHash('sha256').update(b).digest('hex');
+console.log(`20MB upload ${up}s download ${(Date.now() - t) / 1000}s identical: ${h(readFileSync('/tmp/hiok-sdk-ts20.dst')) === h(data)}`);
+const web = new ReadableStream({ start(ctrl) { for (let i = 0; i < data.length; i += 70000) ctrl.enqueue(data.subarray(i, i + 70000)); ctrl.close(); } });
+await c.storage.upload(acct, 'sdk-test-ts', 'big/web-stream.bin', web);
+const parts = []; for await (const p of c.storage.download(acct, 'sdk-test-ts', 'big/web-stream.bin')) parts.push(p);
+console.log('web stream upload identical:', h(Buffer.concat(parts)) === h(data));
+await c.storage.upload(acct, 'sdk-test-ts', 'small.txt', new TextEncoder().encode('hello from typescript'));
+const key = (await c.api.storageAccount.getAccessKeys(acct)).data.key1;
+const k = new HiokClient({ endpoint: process.env.HIOK_ENDPOINT ?? 'https://test.hiokcloud.com', storageKey: key });
+const small = []; for await (const p of k.storage.download(acct, 'sdk-test-ts', 'small.txt')) small.push(p);
+console.log('storage key read:', Buffer.concat(small).toString());
+try { await k.api.keyVault.list(); console.log('BAD'); } catch (e) { console.log('storage key refused elsewhere:', e.status, e instanceof HiokError); }
+for (const o of await c.storage.list(acct, 'sdk-test-ts')) await c.storage.delete(acct, 'sdk-test-ts', o.key);
+console.log('after delete:', (await c.storage.list(acct, 'sdk-test-ts')).length);
+await c.api.storageObject.deleteContainer(acct, 'sdk-test-ts', { force: true });
