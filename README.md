@@ -2,10 +2,13 @@
 
 Official source SDKs for HIOK Cloud.
 
-- [TypeScript](typescript/) — browser or Node.js
-- [Python](python/) — Python 3.10+
-- [Go](go/) — Go 1.23+
-- [.NET](dotnet/) — .NET 10+
+| Language | Install |
+|---|---|
+| Python 3.10+ | `pip install hiok-cloud` |
+| .NET 8 / 10 | `dotnet add package Hiok.Cloud` |
+| Java 17+ | Maven `com.hiokcloud:hiok-sdk` |
+| TypeScript / Node 20+ | `npm install @hiok/cloud` |
+| Go 1.23+ | `go get github.com/HIOK-Official/hiok-sdk/go` |
 
 All SDKs use the same REST API and support either a bearer token or email/password sign-in. Tokens and passwords must come from environment variables or a secret manager, never source control.
 
@@ -25,8 +28,8 @@ storage transfer helper for files of any size.
 | Language | Package | Operations | Storage transfer |
 |---|---|---|---|
 | Python 3.10+ | `hiok-cloud` | `client.api.<group>.<operation>()` | `client.storage.upload_file()` / `download_file()` / `upload_stream()` / `iter_download()` |
-| .NET 10 | `Hiok.Cloud` | `client.Api.<Group>.<Operation>Async()` | `client.Storage.UploadFileAsync()` / `DownloadFileAsync()` / `UploadStreamAsync()` |
-| Java 17+ | `cloud.hiok:hiok-sdk` | `client.api().<group>().<operation>()` | `client.storage().uploadFile()` / `downloadFile()` / `uploadStream()` |
+| .NET 8 / 10 | `Hiok.Cloud` | `client.Api.<Group>.<Operation>Async()` | `client.Storage.UploadFileAsync()` / `DownloadFileAsync()` / `UploadStreamAsync()` |
+| Java 17+ | `com.hiokcloud:hiok-sdk` | `client.api().<group>().<operation>()` | `client.storage().uploadFile()` / `downloadFile()` / `uploadStream()` |
 | TypeScript / Node 20+ | `@hiok/cloud` | `client.api.<group>.<operation>()` | `client.storage.uploadFile()` / `downloadFile()` / `upload()` / `download()` |
 | Go 1.23+ | `github.com/HIOK-Official/hiok-sdk/go` | `client.API().<Group>.<Operation>(ctx)` | `client.Storage().UploadFile()` / `DownloadFile()` / `UploadStream()` |
 

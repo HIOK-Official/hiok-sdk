@@ -1,13 +1,14 @@
 {
   "name": "@hiok/cloud",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Official TypeScript SDK for HIOK Cloud",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -19,5 +20,19 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "keywords": [
+    "hiok",
+    "cloud",
+    "sdk"
+  ],
+  "homepage": "https://hiokcloud.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HIOK-Official/hiok-sdk.git",
+    "directory": "typescript"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

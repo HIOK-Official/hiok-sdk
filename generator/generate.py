@@ -13,7 +13,7 @@ one class per API group, one method per operation, named from the operationId.
 Emits:
   python/src/hiok/_generated.py
   dotnet/Hiok.Cloud/Generated.cs
-  java/src/main/java/cloud/hiok/api/*.java  (one file per group + Api.java)
+  java/src/main/java/com/hiokcloud/api/*.java  (one file per group + Api.java)
   typescript/src/generated.ts
   go/generated.go
   operations.json   (the same data, for the documentation page)
@@ -291,9 +291,9 @@ def emit_java(ops: list[Op], dest: Path) -> int:
         shutil.rmtree(dest)
     dest.mkdir(parents=True)
     groups = by_group(ops)
-    header = "// Generated from the HIOK API's OpenAPI document. Do not edit: run hiok-sdk/generator/generate.py.\npackage cloud.hiok.api;\n\n"
+    header = "// Generated from the HIOK API's OpenAPI document. Do not edit: run hiok-sdk/generator/generate.py.\npackage com.hiokcloud.api;\n\n"
     for group, items in groups.items():
-        lines = [header + "import cloud.hiok.HiokClient;\nimport com.fasterxml.jackson.databind.JsonNode;\nimport java.util.LinkedHashMap;\nimport java.util.Map;\n",
+        lines = [header + "import com.hiokcloud.HiokClient;\nimport com.fasterxml.jackson.databind.JsonNode;\nimport java.util.LinkedHashMap;\nimport java.util.Map;\n",
                  f"/** {group} operations. */", f"public final class {group}Api {{", "    private final HiokClient c;",
                  f"    public {group}Api(HiokClient client) {{ this.c = client; }}"]
         for op in items:
@@ -332,7 +332,7 @@ def emit_java(ops: list[Op], dest: Path) -> int:
                 lines.append("    }")
         lines.append("}")
         (dest / f"{group}Api.java").write_text("\n".join(lines) + "\n")
-    api = [header + "import cloud.hiok.HiokClient;\n",
+    api = [header + "import com.hiokcloud.HiokClient;\n",
            "/** Every API operation, grouped as the API groups them: {@code client.api().<group>().<operation>()}. */",
            "public final class Api {"]
     for group in groups:
@@ -451,7 +451,7 @@ def main() -> int:
     ops = collect(load(args.spec))
     (ROOT / "python/src/hiok/_generated.py").write_text(emit_python(ops))
     (ROOT / "dotnet/Hiok.Cloud/Generated.cs").write_text(emit_csharp(ops))
-    java_files = emit_java(ops, ROOT / "java/src/main/java/cloud/hiok/api")
+    java_files = emit_java(ops, ROOT / "java/src/main/java/com/hiokcloud/api")
     (ROOT / "typescript/src/generated.ts").write_text(emit_typescript(ops))
     (ROOT / "go/generated.go").write_text(emit_go(ops))
     gofmt = shutil.which("gofmt") or str(Path.home() / ".go/bin/gofmt")

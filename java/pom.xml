@@ -2,14 +2,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>cloud.hiok</groupId>
+  <groupId>com.hiokcloud</groupId>
   <artifactId>hiok-sdk</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <packaging>jar</packaging>
   <name>HIOK Cloud SDK for Java</name>
   <description>Official Java SDK for HIOK Cloud: every API operation plus large-file storage transfer.</description>
   <url>https://github.com/HIOK-Official/hiok-sdk</url>
-  <licenses><license><name>MIT</name></license></licenses>
+  <licenses>
+    <license><name>MIT License</name><url>https://opensource.org/licenses/MIT</url></license>
+  </licenses>
+  <developers>
+    <developer><name>HIOK Cloud</name><email>support@hiokcloud.com</email><organization>HIOK Cloud</organization><organizationUrl>https://hiokcloud.com</organizationUrl></developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/HIOK-Official/hiok-sdk.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/HIOK-Official/hiok-sdk.git</developerConnection>
+    <url>https://github.com/HIOK-Official/hiok-sdk</url>
+  </scm>
 
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
@@ -23,4 +33,42 @@
       <version>2.19.2</version>
     </dependency>
   </dependencies>
+
+  <!-- mvn -P release deploy: sources, javadoc and GPG signatures, uploaded to Maven Central. -->
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions><execution><id>attach-sources</id><goals><goal>jar-no-fork</goal></goals></execution></executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.11.2</version>
+            <configuration><doclint>none</doclint><quiet>true</quiet></configuration>
+            <executions><execution><id>attach-javadocs</id><goals><goal>jar</goal></goals></execution></executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.7</version>
+            <configuration><gpgArguments><arg>--pinentry-mode</arg><arg>loopback</arg></gpgArguments></configuration>
+            <executions><execution><id>sign-artifacts</id><phase>verify</phase><goals><goal>sign</goal></goals></execution></executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.8.0</version>
+            <extensions>true</extensions>
+            <configuration><publishingServerId>central</publishingServerId><autoPublish>true</autoPublish><waitUntil>published</waitUntil></configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
