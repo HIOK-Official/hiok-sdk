@@ -28,6 +28,7 @@ public sealed partial class HiokClient
 
     public async Task<JsonDocument> SendAsync(HttpMethod method, string path, object? body = null, bool authenticated = true, CancellationToken cancellationToken = default)
     {
+        if (authenticated) await EnsureTokenAsync(cancellationToken);
         if (authenticated && string.IsNullOrWhiteSpace(_token))
             throw new HiokException("No token configured; call LoginAsync first");
 

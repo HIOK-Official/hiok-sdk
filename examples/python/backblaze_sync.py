@@ -4,7 +4,7 @@ Copy files between Backblaze B2 and a HIOK storage account, in either direction.
 
     pip install hiok-cloud b2sdk
 
-    export HIOK_ENDPOINT=https://test.hiokcloud.com
+    export HIOK_ENDPOINT=https://hiokcloud.com
     export HIOK_STORAGE_KEY=...        # the storage account's access key (or HIOK_TOKEN)
     export B2_KEYID=... B2_APPKEY=...  # a Backblaze application key
 

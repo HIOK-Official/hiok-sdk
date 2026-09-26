@@ -1,7 +1,7 @@
 import { HiokClient, HiokError } from '../typescript/dist/index.js';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createHash, randomBytes } from 'node:crypto';
-const c = new HiokClient({ endpoint: process.env.HIOK_ENDPOINT ?? 'https://test.hiokcloud.com', token: process.env.HIOK_TOKEN });
+const c = new HiokClient({ endpoint: process.env.HIOK_ENDPOINT ?? 'https://hiokcloud.com', token: process.env.HIOK_TOKEN });
 console.log('key vaults:', (await c.api.keyVault.list()).length);
 const acct = (await c.api.storageAccount.getStorageAccounts()).data.find(a => a.name === process.env.HIOK_TEST_STORAGE_ACCOUNT).id;
 await c.storage.ensureContainer(acct, 'sdk-test-ts');
@@ -17,7 +17,7 @@ const parts = []; for await (const p of c.storage.download(acct, 'sdk-test-ts', 
 console.log('web stream upload identical:', h(Buffer.concat(parts)) === h(data));
 await c.storage.upload(acct, 'sdk-test-ts', 'small.txt', new TextEncoder().encode('hello from typescript'));
 const key = (await c.api.storageAccount.getAccessKeys(acct)).data.key1;
-const k = new HiokClient({ endpoint: process.env.HIOK_ENDPOINT ?? 'https://test.hiokcloud.com', storageKey: key });
+const k = new HiokClient({ endpoint: process.env.HIOK_ENDPOINT ?? 'https://hiokcloud.com', storageKey: key });
 const small = []; for await (const p of k.storage.download(acct, 'sdk-test-ts', 'small.txt')) small.push(p);
 console.log('storage key read:', Buffer.concat(small).toString());
 try { await k.api.keyVault.list(); console.log('BAD'); } catch (e) { console.log('storage key refused elsewhere:', e.status, e instanceof HiokError); }

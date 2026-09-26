@@ -21,11 +21,19 @@ type Client struct {
 	// StorageKey is a storage account access key, used when Token is empty. It opens
 	// only that account's containers, file shares, queues and tables.
 	StorageKey string
+	// ClientID and ClientSecret are a service principal's credentials (CI/CD). With
+	// them set and no Token, the client signs in on first use and again before the
+	// one-hour token runs out.
+	ClientID     string
+	ClientSecret string
 	// Retries is how many times a GET that meets 429/502/503/504 is retried (default 4).
 	Retries int
 
 	apiOnce sync.Once
 	api     *Api
+
+	spMu      sync.Mutex
+	spExpires time.Time
 }
 
 func New(endpoint, token string) *Client {
@@ -52,6 +60,43 @@ func (c *Client) Login(ctx context.Context, email, password string) error {
 	return nil
 }
 
+// LoginServicePrincipal signs in with a service principal's client ID and secret
+// (POST /api/OAuth/token/client). The token lasts an hour; a client built with
+// ClientID/ClientSecret renews it by itself.
+func (c *Client) LoginServicePrincipal(ctx context.Context, clientID, clientSecret string) error {
+	var response struct {
+		Data struct {
+			Token string `json:"token"`
+		} `json:"data"`
+		Message string `json:"message"`
+	}
+	if err := c.Do(ctx, http.MethodPost, "/api/OAuth/token/client",
+		map[string]string{"clientId": clientID, "clientSecret": clientSecret}, &response, false); err != nil {
+		return err
+	}
+	if response.Data.Token == "" {
+		return fmt.Errorf("service principal sign-in failed: %s", response.Message)
+	}
+	c.ClientID, c.ClientSecret = clientID, clientSecret
+	c.Token = response.Data.Token
+	c.spExpires = time.Now().Add(55 * time.Minute)
+	return nil
+}
+
+// ensureToken signs a service principal in when there is no token yet, or when the
+// one it got is about to expire.
+func (c *Client) ensureToken(ctx context.Context) error {
+	if c.ClientID == "" || c.ClientSecret == "" {
+		return nil
+	}
+	c.spMu.Lock()
+	defer c.spMu.Unlock()
+	if c.Token != "" && (c.spExpires.IsZero() || time.Now().Before(c.spExpires)) {
+		return nil
+	}
+	return c.LoginServicePrincipal(ctx, c.ClientID, c.ClientSecret)
+}
+
 func (c *Client) Do(ctx context.Context, method, path string, in, out any, auth bool) error {
 	var body io.Reader
 	if in != nil {
@@ -70,6 +115,9 @@ func (c *Client) Do(ctx context.Context, method, path string, in, out any, auth 
 		req.Header.Set("Content-Type", "application/json")
 	}
 	if auth {
+		if err := c.ensureToken(ctx); err != nil {
+			return err
+		}
 		if c.Token == "" {
 			return fmt.Errorf("no token configured")
 		}
@@ -95,6 +143,9 @@ func (c *Client) Do(ctx context.Context, method, path string, in, out any, auth 
 func (c *Client) DoRaw(ctx context.Context, method, path string) ([]byte, error) {
 	req, err := http.NewRequestWithContext(ctx, method, c.Endpoint+path, nil)
 	if err != nil {
+		return nil, err
+	}
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 	if c.Token == "" {

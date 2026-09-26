@@ -1,7 +1,7 @@
 import hashlib, io, os, sys, time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../python/src"))
 from hiok import HiokClient, HiokError
-c = HiokClient(os.environ.get("HIOK_ENDPOINT", "https://test.hiokcloud.com"), token=os.environ["HIOK_TOKEN"])
+c = HiokClient(os.environ.get("HIOK_ENDPOINT", "https://hiokcloud.com"), token=os.environ["HIOK_TOKEN"])
 missing = [m for m in "get_container create_container list_objects delete_object get_object put_object stage_block commit_block_list".split() if not hasattr(c.api.storage_object, m)]
 print("storage_object methods missing:", missing)
 groups = [g for g in vars(c.api)]; print("api groups:", len(groups))
@@ -23,7 +23,7 @@ c.storage.upload_stream(acct, "sdk-test", "big/streamed.bin", Trickle(data))
 print("streamed upload identical:", hashlib.sha256(b"".join(c.storage.iter_download(acct, "sdk-test", "big/streamed.bin"))).digest() == hashlib.sha256(data).digest())
 print("listing:", sorted(o["key"] for o in c.storage.list(acct, "sdk-test")))
 key = c.api.storage_account.get_access_keys(acct)["data"]["key1"]
-k = HiokClient(os.environ.get("HIOK_ENDPOINT", "https://test.hiokcloud.com"), storage_key=key)
+k = HiokClient(os.environ.get("HIOK_ENDPOINT", "https://hiokcloud.com"), storage_key=key)
 print("storage-key read:", k.api.storage_object.get_object_content(acct, "sdk-test", "small/hello.txt"))
 try: k.api.key_vault.list(); print("storage key reached Key Vault: BAD")
 except HiokError as e: print("storage key refused elsewhere:", e.status)

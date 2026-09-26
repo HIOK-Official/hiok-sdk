@@ -12,12 +12,16 @@ export class HiokError extends Error {
 }
 
 export interface HiokClientOptions {
-  /** Base URL, e.g. https://test.hiokcloud.com (default: $HIOK_ENDPOINT or https://hiokcloud.com). */
+  /** Base URL, e.g. https://hiokcloud.com (default: $HIOK_ENDPOINT or https://hiokcloud.com). */
   endpoint?: string;
   /** Bearer token (default: $HIOK_TOKEN). */
   token?: string;
   /** A storage account access key: that account's data only (default: $HIOK_STORAGE_KEY). */
   storageKey?: string;
+  /** A service principal, for CI/CD (default: $HIOK_CLIENT_ID / $HIOK_CLIENT_SECRET). Signed in on
+   *  first use and renewed before its one-hour token lapses. */
+  clientId?: string;
+  clientSecret?: string;
   /** Attempts for a GET that meets 429/502/503/504 (default 4). */
   retries?: number;
   fetch?: typeof globalThis.fetch;
@@ -32,6 +36,10 @@ export class HiokClient implements HiokTransport {
   readonly endpoint: string;
   private token?: string;
   private storageKey?: string;
+  private clientId?: string;
+  private clientSecret?: string;
+  private spExpires = 0;
+  private spLogin?: Promise<unknown>;
   private readonly retries: number;
   private readonly fetcher: typeof globalThis.fetch;
   /** Every API operation, grouped as the API groups them: `client.api.keyVault.list()`. */
@@ -43,6 +51,9 @@ export class HiokClient implements HiokTransport {
     this.endpoint = (options.endpoint ?? env('HIOK_ENDPOINT') ?? 'https://hiokcloud.com').replace(/\/$/, '');
     this.token = options.token ?? env('HIOK_TOKEN');
     this.storageKey = options.storageKey ?? env('HIOK_STORAGE_KEY');
+    const explicitToken = options.token !== undefined;
+    this.clientId = options.clientId ?? (explicitToken ? undefined : env('HIOK_CLIENT_ID'));
+    this.clientSecret = options.clientSecret ?? (explicitToken ? undefined : env('HIOK_CLIENT_SECRET'));
     this.retries = options.retries ?? 4;
     this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis);
     this.api = new Api(this);
@@ -55,6 +66,26 @@ export class HiokClient implements HiokTransport {
     if (!token) throw new HiokError(response?.message ?? 'Sign-in failed');
     this.token = token;
     return this;
+  }
+
+  /** Sign in as a service principal (Identity → Service principals); the token lasts an hour. */
+  async loginServicePrincipal(clientId: string, clientSecret: string): Promise<this> {
+    const response = await this.request<any>('POST', '/api/OAuth/token/client', { clientId, clientSecret }, false);
+    const token = response?.data?.token;
+    if (!token) throw new HiokError(response?.message ?? 'Service principal sign-in failed');
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.token = token;
+    this.spExpires = Date.now() + 55 * 60 * 1000;
+    return this;
+  }
+
+  private async ensureToken(): Promise<void> {
+    if (!this.clientId || !this.clientSecret) return;
+    if (this.token && (this.spExpires === 0 || Date.now() < this.spExpires)) return;
+    // Concurrent calls share one sign-in.
+    this.spLogin ??= this.loginServicePrincipal(this.clientId, this.clientSecret).finally(() => { this.spLogin = undefined; });
+    await this.spLogin;
   }
 
   setToken(token: string): this { this.token = token; return this; }
@@ -88,6 +119,7 @@ export class HiokClient implements HiokTransport {
                      query: Record<string, unknown> | undefined, auth: boolean): Promise<Response> {
     const safe = method === 'GET' || method === 'HEAD' || method === 'OPTIONS';
     const attempts = safe ? this.retries + 1 : 1;
+    if (auth) await this.ensureToken();
     for (let attempt = 0; ; attempt++) {
       let response: Response;
       try {

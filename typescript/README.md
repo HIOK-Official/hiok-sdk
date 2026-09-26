@@ -9,7 +9,7 @@ npm install @hiok/cloud
 ```ts
 import { HiokClient } from '@hiok/cloud';
 
-const client = new HiokClient({ endpoint: 'https://test.hiokcloud.com', token: process.env.HIOK_TOKEN });
+const client = new HiokClient({ endpoint: 'https://hiokcloud.com', token: process.env.HIOK_TOKEN });
 // or: await client.login(email, password), or { storageKey } for one storage account
 
 const { data: accounts } = await client.api.storageAccount.getStorageAccounts();
@@ -20,4 +20,4 @@ await client.storage.downloadFile(accounts[0].id, 'backups', '2026/db.dump', '/t
 Uploads go in parallel 3 MB blocks, downloads in ranges, and both are sha256-verified.
 GET requests are retried on 429/502/503/504; writes are never repeated. Node 20+.
 
-Documentation: https://test.hiokcloud.com/docs · Source: https://github.com/HIOK-Official/hiok-sdk
+Documentation: https://hiokcloud.com/docs · Source: https://github.com/HIOK-Official/hiok-sdk

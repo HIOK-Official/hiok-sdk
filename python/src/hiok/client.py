@@ -1,7 +1,7 @@
 """Dependency-free HIOK Cloud REST client.
 
     from hiok import HiokClient
-    client = HiokClient("https://test.hiokcloud.com", token=os.environ["HIOK_TOKEN"])
+    client = HiokClient("https://hiokcloud.com", token=os.environ["HIOK_TOKEN"])
     client.api.key_vault.list()                         # every API operation, by group
     client.storage.upload_file(account_id, "data", "backups/db.dump", "db.dump")
 
@@ -44,15 +44,22 @@ _SAFE_METHODS = {"GET", "HEAD", "OPTIONS", "PROPFIND"}
 
 class HiokClient:
     def __init__(self, endpoint: str | None = None, token: str | None = None, *,
-                 storage_key: str | None = None, timeout: float = 300, retries: int = 4):
+                 storage_key: str | None = None, client_id: str | None = None, client_secret: str | None = None,
+                 timeout: float = 300, retries: int = 4):
         """
-        endpoint     base URL, e.g. https://test.hiokcloud.com (default: $HIOK_ENDPOINT or https://hiokcloud.com)
-        token        bearer token (default: $HIOK_TOKEN)
-        storage_key  a storage account access key, for that account's data only (default: $HIOK_STORAGE_KEY)
+        endpoint       base URL, e.g. https://hiokcloud.com (default: $HIOK_ENDPOINT or https://hiokcloud.com)
+        token          bearer token (default: $HIOK_TOKEN)
+        storage_key    a storage account access key, for that account's data only (default: $HIOK_STORAGE_KEY)
+        client_id,
+        client_secret  a service principal, for CI/CD (default: $HIOK_CLIENT_ID / $HIOK_CLIENT_SECRET);
+                       signed in on first use and renewed before its one-hour token lapses
         """
         self.endpoint = (endpoint or os.environ.get("HIOK_ENDPOINT") or "https://hiokcloud.com").rstrip("/")
         self.token = token or os.environ.get("HIOK_TOKEN")
         self.storage_key = storage_key or os.environ.get("HIOK_STORAGE_KEY")
+        self.client_id = client_id or (None if token else os.environ.get("HIOK_CLIENT_ID"))
+        self.client_secret = client_secret or (None if token else os.environ.get("HIOK_CLIENT_SECRET"))
+        self._sp_expires = 0.0
         self.timeout = timeout
         self.retries = retries
         self.api = Api(self)
@@ -66,6 +73,26 @@ class HiokClient:
             raise HiokError((payload or {}).get("message", "Sign-in failed"))
         self.token = token
         return self
+
+    def login_service_principal(self, client_id: str, client_secret: str) -> "HiokClient":
+        """Sign in as a service principal (Identity → Service principals). The token lasts an
+        hour; a client built with client_id/client_secret renews it by itself."""
+        payload = self.request("POST", "/api/OAuth/token/client",
+                               {"clientId": client_id, "clientSecret": client_secret}, auth=False)
+        token = (payload or {}).get("data", {}).get("token")
+        if not token:
+            raise HiokError((payload or {}).get("message", "Service principal sign-in failed"))
+        self.client_id, self.client_secret = client_id, client_secret
+        self.token = token
+        self._sp_expires = time.time() + 55 * 60
+        return self
+
+    def _ensure_token(self) -> None:
+        if not (self.client_id and self.client_secret):
+            return
+        if self.token and (self._sp_expires == 0 or time.time() < self._sp_expires):
+            return
+        self.login_service_principal(self.client_id, self.client_secret)
 
     # ── transport ──────────────────────────────────────────────────────────
 
@@ -88,8 +115,9 @@ class HiokClient:
         return ("?" + urllib.parse.urlencode(pairs)) if pairs else ""
 
     def _headers(self, auth: bool, extra: dict[str, str] | None) -> dict[str, str]:
-        headers = {"Accept": "application/json", "User-Agent": "hiok-python-sdk/0.2"}
+        headers = {"Accept": "application/json", "User-Agent": "hiok-python-sdk/0.3"}
         if auth:
+            self._ensure_token()
             if self.token:
                 headers["Authorization"] = f"Bearer {self.token}"
             elif self.storage_key:

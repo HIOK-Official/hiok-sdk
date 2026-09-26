@@ -3,7 +3,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path[:0] = [os.path.join(
 os.environ["B2_SIMULATE"] = "1"
 import backblaze_sync as bs
 from hiok import HiokClient
-hiok = HiokClient(os.environ.get("HIOK_ENDPOINT", "https://test.hiokcloud.com"), token=os.environ["HIOK_TOKEN"])
+hiok = HiokClient(os.environ.get("HIOK_ENDPOINT", "https://hiokcloud.com"), token=os.environ["HIOK_TOKEN"])
 acct = next(a for a in hiok.api.storage_account.get_storage_accounts()["data"] if a["name"] == os.environ["HIOK_TEST_STORAGE_ACCOUNT"])["id"]
 b2 = bs.b2_api()
 try:

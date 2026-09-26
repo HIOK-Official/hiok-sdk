@@ -26,7 +26,7 @@ import java.util.UUID;
  *
  * <pre>{@code
  * HiokClient client = HiokClient.builder()
- *     .endpoint("https://test.hiokcloud.com")
+ *     .endpoint("https://hiokcloud.com")
  *     .token(System.getenv("HIOK_TOKEN"))
  *     .build();
  * JsonNode vaults = client.api().keyVault().list();          // every API operation, by group
@@ -48,6 +48,9 @@ public final class HiokClient {
     private final int retries;
     private volatile String token;
     private volatile String storageKey;
+    private volatile String clientId;
+    private volatile String clientSecret;
+    private volatile long spExpires;
     private final Api api;
     private final StorageTransfer storage;
 
@@ -55,6 +58,8 @@ public final class HiokClient {
         this.endpoint = b.endpoint.replaceAll("/+$", "");
         this.token = b.token;
         this.storageKey = b.storageKey;
+        this.clientId = b.clientId;
+        this.clientSecret = b.clientSecret;
         this.retries = b.retries;
         this.http = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(30))
@@ -66,12 +71,19 @@ public final class HiokClient {
 
     public static Builder builder() { return new Builder(); }
 
-    /** A client configured from HIOK_ENDPOINT, HIOK_TOKEN and HIOK_STORAGE_KEY. */
+    /**
+     * A client configured from HIOK_ENDPOINT, HIOK_TOKEN, HIOK_STORAGE_KEY, and
+     * HIOK_CLIENT_ID + HIOK_CLIENT_SECRET (a service principal, for CI/CD).
+     */
     public static HiokClient fromEnvironment() {
+        String token = System.getenv("HIOK_TOKEN");
+        boolean noToken = token == null || token.isBlank();
         return builder()
                 .endpoint(System.getenv().getOrDefault("HIOK_ENDPOINT", "https://hiokcloud.com"))
-                .token(System.getenv("HIOK_TOKEN"))
+                .token(token)
                 .storageKey(System.getenv("HIOK_STORAGE_KEY"))
+                .servicePrincipal(noToken ? System.getenv("HIOK_CLIENT_ID") : null,
+                                  noToken ? System.getenv("HIOK_CLIENT_SECRET") : null)
                 .build();
     }
 
@@ -90,6 +102,28 @@ public final class HiokClient {
         if (t == null || t.isEmpty()) throw new HiokException("Sign-in failed", 0, reply);
         this.token = t;
         return this;
+    }
+
+    /**
+     * Sign in as a service principal (Identity → Service principals). The token lasts an
+     * hour; a client built with {@link Builder#servicePrincipal} renews it by itself.
+     */
+    public synchronized HiokClient loginServicePrincipal(String clientId, String clientSecret) {
+        JsonNode reply = sendInternal("POST", "/api/OAuth/token/client",
+                Map.of("clientId", clientId, "clientSecret", clientSecret), null, false);
+        String t = reply == null ? null : reply.path("data").path("token").asText(null);
+        if (t == null || t.isEmpty()) throw new HiokException("Service principal sign-in failed", 0, reply);
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.token = t;
+        this.spExpires = System.currentTimeMillis() + 55L * 60 * 1000;
+        return this;
+    }
+
+    private synchronized void ensureToken() {
+        if (clientId == null || clientId.isBlank() || clientSecret == null || clientSecret.isBlank()) return;
+        if (token != null && !token.isBlank() && (spExpires == 0 || System.currentTimeMillis() < spExpires)) return;
+        loginServicePrincipal(clientId, clientSecret);
     }
 
     public void setToken(String token) { this.token = token; }
@@ -161,7 +195,7 @@ public final class HiokClient {
             HttpRequest.Builder req = HttpRequest.newBuilder(URI.create(endpoint + path + query(query)))
                     .timeout(Duration.ofMinutes(10))
                     .header("Accept", "application/json")
-                    .header("User-Agent", "hiok-java-sdk/0.2");
+                    .header("User-Agent", "hiok-java-sdk/0.3");
             if (auth) authorize(req);
             if (headers != null) headers.forEach(req::header);
             if (payload != null && !(body instanceof byte[])) req.header("Content-Type", "application/json");
@@ -215,6 +249,7 @@ public final class HiokClient {
     }
 
     private void authorize(HttpRequest.Builder req) {
+        ensureToken();
         if (token != null && !token.isBlank()) req.header("Authorization", "Bearer " + token);
         else if (storageKey != null && !storageKey.isBlank()) req.header("x-hiok-storage-key", storageKey);
         else throw new HiokException("No credentials: set a token, a storage key, or call login() first", 0, null);
@@ -232,12 +267,16 @@ public final class HiokClient {
         private String endpoint = "https://hiokcloud.com";
         private String token;
         private String storageKey;
+        private String clientId;
+        private String clientSecret;
         private int retries = 4;
 
         public Builder endpoint(String v) { if (v != null) endpoint = v; return this; }
         public Builder token(String v) { token = v; return this; }
         /** A storage account access key: that account's data only. */
         public Builder storageKey(String v) { storageKey = v; return this; }
+        /** A service principal (CI/CD): signed in on first use, token renewed before it lapses. */
+        public Builder servicePrincipal(String id, String secret) { clientId = id; clientSecret = secret; return this; }
         /** Attempts for a safe request that meets 429/502/503/504. */
         public Builder retries(int v) { retries = v; return this; }
         public HiokClient build() { return new HiokClient(this); }

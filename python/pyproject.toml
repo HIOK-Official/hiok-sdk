@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hiok-cloud"
-version = "0.2.1"
+version = "0.3.0"
 description = "Official Python SDK for HIOK Cloud"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -20,7 +20,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://hiokcloud.com"
-Documentation = "https://test.hiokcloud.com/docs"
+Documentation = "https://hiokcloud.com/docs"
 Source = "https://github.com/HIOK-Official/hiok-sdk"
 
 [tool.setuptools.packages.find]

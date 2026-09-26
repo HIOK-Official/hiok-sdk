@@ -79,5 +79,5 @@ func endpoint() string {
 	if e := os.Getenv("HIOK_ENDPOINT"); e != "" {
 		return e
 	}
-	return "https://test.hiokcloud.com"
+	return "https://hiokcloud.com"
 }

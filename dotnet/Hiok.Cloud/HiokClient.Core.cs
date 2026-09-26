@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 #nullable enable
 using System.Net;
 using System.Net.Http.Headers;
@@ -27,13 +28,54 @@ public sealed partial class HiokClient
     /// <summary>Attempts for a safe request (GET/HEAD) that meets 429, 502, 503 or 504.</summary>
     public int Retries { get; set; } = 4;
 
+    /// <summary>A service principal's client ID, for CI/CD. With a secret and no token, the client
+    /// signs in on first use and renews the one-hour token before it lapses.</summary>
+    public string? ClientId { get; set; }
+    /// <summary>The service principal's client secret.</summary>
+    public string? ClientSecret { get; set; }
+
+    private DateTimeOffset _spExpires;
+    private readonly SemaphoreSlim _spLock = new(1, 1);
+
     /// <summary>
-    /// A client configured from HIOK_ENDPOINT, HIOK_TOKEN and HIOK_STORAGE_KEY.
+    /// A client configured from HIOK_ENDPOINT, HIOK_TOKEN, HIOK_STORAGE_KEY, and
+    /// HIOK_CLIENT_ID + HIOK_CLIENT_SECRET (a service principal).
     /// </summary>
-    public static HiokClient FromEnvironment() =>
-        new(Environment.GetEnvironmentVariable("HIOK_ENDPOINT") ?? "https://hiokcloud.com",
-            Environment.GetEnvironmentVariable("HIOK_TOKEN"))
-        { StorageKey = Environment.GetEnvironmentVariable("HIOK_STORAGE_KEY") };
+    public static HiokClient FromEnvironment()
+    {
+        var token = Environment.GetEnvironmentVariable("HIOK_TOKEN");
+        return new(Environment.GetEnvironmentVariable("HIOK_ENDPOINT") ?? "https://hiokcloud.com", token)
+        {
+            StorageKey = Environment.GetEnvironmentVariable("HIOK_STORAGE_KEY"),
+            ClientId = string.IsNullOrEmpty(token) ? Environment.GetEnvironmentVariable("HIOK_CLIENT_ID") : null,
+            ClientSecret = string.IsNullOrEmpty(token) ? Environment.GetEnvironmentVariable("HIOK_CLIENT_SECRET") : null,
+        };
+    }
+
+    /// <summary>Signs in as a service principal (Identity → Service principals). The token lasts an hour.</summary>
+    public async Task LoginServicePrincipalAsync(string clientId, string clientSecret, CancellationToken ct = default)
+    {
+        using var response = await _http.PostAsJsonAsync("api/OAuth/token/client", new { clientId, clientSecret }, ct);
+        using var document = await ReadAsync(response, ct);
+        _token = document.RootElement.GetProperty("data").GetProperty("token").GetString()
+            ?? throw new HiokException("Service principal sign-in did not return a token", response.StatusCode);
+        ClientId = clientId;
+        ClientSecret = clientSecret;
+        _spExpires = DateTimeOffset.UtcNow.AddMinutes(55);
+    }
+
+    private async Task EnsureTokenAsync(CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(ClientId) || string.IsNullOrEmpty(ClientSecret)) return;
+        if (!string.IsNullOrEmpty(_token) && (_spExpires == default || DateTimeOffset.UtcNow < _spExpires)) return;
+        await _spLock.WaitAsync(ct);
+        try
+        {
+            if (string.IsNullOrEmpty(_token) || (_spExpires != default && DateTimeOffset.UtcNow >= _spExpires))
+                await LoginServicePrincipalAsync(ClientId!, ClientSecret!, ct);
+        }
+        finally { _spLock.Release(); }
+    }
 
     /// <summary>Encodes one path parameter; a key keeps its slashes ("dir/file.txt").</summary>
     public static string Segment(string value, bool slashed = false) =>
@@ -96,6 +138,7 @@ public sealed partial class HiokClient
     {
         var safe = method == HttpMethod.Get || method == HttpMethod.Head || method == HttpMethod.Options;
         var attempts = safe ? Retries + 1 : 1;
+        await EnsureTokenAsync(ct);
         for (var attempt = 0; ; attempt++)
         {
             using var request = new HttpRequestMessage(method, path.TrimStart('/') + Query(query));
@@ -134,6 +177,7 @@ public sealed partial class HiokClient
     public async Task<JsonNode?> InvokeMultipartAsync(HttpMethod method, string path, IDictionary<string, string>? form,
         IDictionary<string, (string FileName, byte[] Content)>? files, IDictionary<string, object?>? query, CancellationToken ct = default)
     {
+        await EnsureTokenAsync(ct);
         using var request = new HttpRequestMessage(method, path.TrimStart('/') + Query(query));
         Authorize(request);
         var multipart = new MultipartFormDataContent();

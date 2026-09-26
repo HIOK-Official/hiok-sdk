@@ -6,7 +6,7 @@ generated layer, uploads 20 MB to a storage account in blocks and downloads it b
 refused everywhere else, and deletes everything it created.
 
 ```bash
-export HIOK_ENDPOINT=https://test.hiokcloud.com
+export HIOK_ENDPOINT=https://hiokcloud.com
 export HIOK_TOKEN=...                        # a bearer token
 export HIOK_TEST_STORAGE_ACCOUNT=my-account  # name of a storage account the token owns
 

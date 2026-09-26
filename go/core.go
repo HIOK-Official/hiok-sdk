@@ -15,10 +15,14 @@ import (
 	"time"
 )
 
-// NewFromEnvironment builds a client from HIOK_ENDPOINT, HIOK_TOKEN and HIOK_STORAGE_KEY.
+// NewFromEnvironment builds a client from HIOK_ENDPOINT, HIOK_TOKEN,
+// HIOK_STORAGE_KEY, and HIOK_CLIENT_ID + HIOK_CLIENT_SECRET (a service principal,
+// signed in on first use — the way to authenticate a CI/CD pipeline).
 func NewFromEnvironment() *Client {
 	c := New(os.Getenv("HIOK_ENDPOINT"), os.Getenv("HIOK_TOKEN"))
 	c.StorageKey = os.Getenv("HIOK_STORAGE_KEY")
+	c.ClientID = os.Getenv("HIOK_CLIENT_ID")
+	c.ClientSecret = os.Getenv("HIOK_CLIENT_SECRET")
 	return c
 }
 
@@ -147,9 +151,12 @@ func (c *Client) CallRaw(ctx context.Context, method, target string, payload []b
 			return nil, err
 		}
 		req.Header.Set("Accept", "application/json")
-		req.Header.Set("User-Agent", "hiok-go-sdk/0.2")
+		req.Header.Set("User-Agent", "hiok-go-sdk/0.3")
 		for k, v := range headers {
 			req.Header.Set(k, v)
+		}
+		if err := c.ensureToken(ctx); err != nil {
+			return nil, err
 		}
 		if err := c.authorize(req); err != nil {
 			return nil, err
